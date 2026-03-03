@@ -5,59 +5,91 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PriceGuard SaaS</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body{
   font-family:Inter;
-  background:#f4f7f9;
+  background:linear-gradient(135deg,#1e3a8a,#2563eb);
   margin:0;
+  color:#1f2937;
 }
 header{
-  background:#2563eb;
-  color:white;
-  padding:20px;
+  padding:30px;
   text-align:center;
+  color:white;
 }
 .container{
-  max-width:1000px;
+  max-width:1100px;
   margin:30px auto;
   background:white;
-  padding:20px;
-  border-radius:10px;
-  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+  padding:30px;
+  border-radius:15px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.2);
+}
+h2{
+  margin-top:30px;
 }
 input,button{
-  padding:8px;
+  padding:10px;
   margin:5px;
-  border-radius:5px;
-  border:1px solid #ccc;
+  border-radius:8px;
+  border:1px solid #ddd;
 }
 button{
   background:#2563eb;
   color:white;
   border:none;
   cursor:pointer;
+  font-weight:600;
+}
+button:hover{
+  opacity:0.9;
 }
 .pro-btn{
   background:#16a34a;
 }
+.badge{
+  padding:5px 12px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:700;
+}
+.pro{
+  background:#16a34a;
+  color:white;
+}
+.free{
+  background:#9ca3af;
+  color:white;
+}
 table{
   width:100%;
   border-collapse:collapse;
+  margin-top:10px;
 }
 th,td{
-  padding:8px;
-  border-bottom:1px solid #ddd;
+  padding:12px;
+  border-bottom:1px solid #eee;
+}
+tr:hover{
+  background:#f9fafb;
+  cursor:pointer;
 }
 .alert{
-  color:red;
-  font-weight:bold;
+  color:#dc2626;
+  font-weight:700;
 }
 .normal{
-  color:green;
-  font-weight:bold;
+  color:#16a34a;
+  font-weight:700;
+}
+.card{
+  background:#f8fafc;
+  padding:20px;
+  border-radius:12px;
+  margin-top:15px;
 }
 </style>
 </head>
@@ -65,33 +97,45 @@ th,td{
 <body>
 
 <header>
-<h1>PriceGuard - Monitor Profesional</h1>
+<h1>🚀 PriceGuard Monitor Profesional</h1>
+<span id="planStatus" class="badge free">FREE</span>
 </header>
 
 <div class="container">
 
+<div class="card">
 <h2>Registro / Login</h2>
 <input type="email" id="email" placeholder="Email">
 <input type="password" id="password" placeholder="Contraseña">
 <button onclick="register()">Registrarse</button>
 <button onclick="login()">Login</button>
 <button onclick="logout()">Logout</button>
+</div>
 
-<!-- 🔥 BOTÓN PRO AÑADIDO -->
+<div class="card">
 <h2>Plan Pro</h2>
+<p>Usuarios FREE: máximo 3 productos</p>
+<p>Usuarios PRO: productos ilimitados + historial completo</p>
 <button class="pro-btn" onclick="goPro()">Pasar a Pro - 10€/mes</button>
+</div>
 
+<div class="card">
 <h2>Agregar Producto</h2>
 <input type="text" id="productName" placeholder="Producto">
 <input type="number" id="myPrice" placeholder="Tu Precio">
 <input type="number" id="competitorPrice" placeholder="Precio Competidor">
 <button onclick="addProduct()">Guardar</button>
+</div>
 
+<div class="card">
 <h2>Productos</h2>
 <table id="productsTable"></table>
+</div>
 
+<div class="card">
 <h2>Historial</h2>
 <canvas id="chart"></canvas>
+</div>
 
 </div>
 
@@ -100,7 +144,7 @@ th,td{
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } 
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, where, onSnapshot, doc } 
+import { getFirestore, collection, addDoc, query, where, onSnapshot, doc, setDoc, getDoc, getDocs } 
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -116,15 +160,46 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let currentUser = null;
-let selectedProductId = null;
+let currentUser=null;
+let isPro=false;
 
 // AUTH
-window.register = ()=> createUserWithEmailAndPassword(auth,email.value,password.value);
+window.register = async ()=>{
+  const cred = await createUserWithEmailAndPassword(auth,email.value,password.value);
+  await setDoc(doc(db,"users",cred.user.uid),{
+    email:cred.user.email,
+    isPro:false,
+    createdAt:new Date()
+  });
+}
+
 window.login = ()=> signInWithEmailAndPassword(auth,email.value,password.value);
 window.logout = ()=> signOut(auth);
 
-// PRO
+// DETECTAR USUARIO
+onAuthStateChanged(auth, async user=>{
+  if(user){
+    currentUser=user;
+    const userDoc = await getDoc(doc(db,"users",user.uid));
+    isPro = userDoc.data()?.isPro || false;
+    updateBadge();
+    loadProducts();
+  }
+});
+
+// BADGE PLAN
+function updateBadge(){
+  const badge=document.getElementById("planStatus");
+  if(isPro){
+    badge.innerText="PRO";
+    badge.className="badge pro";
+  }else{
+    badge.innerText="FREE";
+    badge.className="badge free";
+  }
+}
+
+// PLAN PRO
 window.goPro = async function(){
   if(!currentUser) return alert("Debes iniciar sesión");
 
@@ -138,57 +213,51 @@ window.goPro = async function(){
   });
 
   const data = await response.json();
-  if(data.url) window.location.href = data.url;
+  if(data.url) window.location.href=data.url;
 }
 
-// DETECTAR USUARIO
-onAuthStateChanged(auth,user=>{
-  if(user){
-    currentUser = user;
-    loadProducts();
-  }
-});
-
-// AGREGAR PRODUCTO + HISTORIAL
+// AGREGAR PRODUCTO
 window.addProduct = async function(){
   if(!currentUser) return alert("Login requerido");
 
+  const q = query(collection(db,"products"), where("user","==",currentUser.uid));
+  const snapshot = await getDocs(q);
+
+  if(!isPro && snapshot.size>=3){
+    alert("Límite FREE alcanzado. Pásate a PRO.");
+    return;
+  }
+
   const productRef = await addDoc(collection(db,"products"),{
-    user: currentUser.uid,
-    name: productName.value,
-    myPrice: Number(myPrice.value),
-    competitorPrice: Number(competitorPrice.value),
-    timestamp: new Date()
+    user:currentUser.uid,
+    name:productName.value,
+    myPrice:Number(myPrice.value),
+    competitorPrice:Number(competitorPrice.value),
+    timestamp:new Date()
   });
 
-  // GUARDAR HISTORIAL
   await addDoc(collection(db,"products",productRef.id,"history"),{
-    myPrice: Number(myPrice.value),
-    competitorPrice: Number(competitorPrice.value),
-    date: new Date()
+    myPrice:Number(myPrice.value),
+    competitorPrice:Number(competitorPrice.value),
+    date:new Date()
   });
 }
 
 // CARGAR PRODUCTOS
 function loadProducts(){
-
-  const q = query(
-    collection(db,"products"),
-    where("user","==",currentUser.uid)
-  );
+  const q=query(collection(db,"products"),where("user","==",currentUser.uid));
 
   onSnapshot(q,snapshot=>{
-
     let table="<tr><th>Producto</th><th>Mi Precio</th><th>Competidor</th><th>Estado</th></tr>";
 
     snapshot.forEach(docSnap=>{
-      let data=docSnap.data();
-      let estado = data.competitorPrice < data.myPrice 
-        ? "<span class='alert'>Más barato</span>" 
-        : "<span class='normal'>OK</span>";
+      const data=docSnap.data();
+      const estado=data.competitorPrice<data.myPrice
+        ?"<span class='alert'>Más barato</span>"
+        :"<span class='normal'>OK</span>";
 
       table+=`
-      <tr onclick="selectProduct('${docSnap.id}','${data.name}')">
+      <tr onclick="loadHistory('${docSnap.id}','${data.name}')">
         <td>${data.name}</td>
         <td>${data.myPrice}</td>
         <td>${data.competitorPrice}</td>
@@ -200,39 +269,23 @@ function loadProducts(){
   });
 }
 
-// SELECCIONAR PRODUCTO PARA VER HISTORIAL
-window.selectProduct = function(productId,name){
-  selectedProductId = productId;
-  loadHistory(productId,name);
-}
-
 // GRÁFICA
-const chart = new Chart(document.getElementById("chart"),{
-  type:'line',
+const chart=new Chart(document.getElementById("chart"),{
+  type:"line",
   data:{
     labels:[],
     datasets:[
-      {
-        label:'Mi Precio',
-        data:[],
-        borderColor:'#2563eb'
-      },
-      {
-        label:'Competidor',
-        data:[],
-        borderColor:'#ef4444'
-      }
+      {label:"Mi Precio",data:[],borderColor:"#2563eb"},
+      {label:"Competidor",data:[],borderColor:"#ef4444"}
     ]
   }
 });
 
-// CARGAR HISTORIAL REAL
-function loadHistory(productId,name){
-
-  const historyRef = collection(db,"products",productId,"history");
+// HISTORIAL
+window.loadHistory=function(productId,name){
+  const historyRef=collection(db,"products",productId,"history");
 
   onSnapshot(historyRef,snapshot=>{
-
     chart.data.labels=[];
     chart.data.datasets[0].data=[];
     chart.data.datasets[1].data=[];
@@ -244,11 +297,8 @@ function loadHistory(productId,name){
       chart.data.datasets[1].data.push(d.competitorPrice);
     });
 
-    chart.options.plugins = {
-      title:{
-        display:true,
-        text:"Historial de "+name
-      }
+    chart.options.plugins={
+      title:{display:true,text:"Historial de "+name}
     };
 
     chart.update();
