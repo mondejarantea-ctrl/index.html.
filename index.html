@@ -1,100 +1,27 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PriceGuard SaaS</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-body{
-  font-family:Inter;
-  background:#f4f7f9;
-  margin:0;
-}
-header{
-  background:#2563eb;
-  color:white;
-  padding:20px;
-  text-align:center;
-}
-.container{
-  max-width:1000px;
-  margin:30px auto;
-  background:white;
-  padding:20px;
-  border-radius:10px;
-  box-shadow:0 5px 15px rgba(0,0,0,0.1);
-}
-input,button{
-  padding:8px;
-  margin:5px;
-  border-radius:5px;
-  border:1px solid #ccc;
-}
-button{
-  background:#2563eb;
-  color:white;
-  border:none;
-  cursor:pointer;
-}
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-th,td{
-  padding:8px;
-  border-bottom:1px solid #ddd;
-}
-.alert{
-  color:red;
-  font-weight:bold;
-}
-.normal{
-  color:green;
-  font-weight:bold;
-}
-</style>
-</head>
-
-<body>
-
-<header>
-<h1>PriceGuard - Monitor Profesional</h1>
-</header>
-
-<div class="container">
-
-<h2>Registro / Login</h2>
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Contraseña">
-<button onclick="register()">Registrarse</button>
-<button onclick="login()">Login</button>
-<button onclick="logout()">Logout</button>
-
-<h2>Agregar Producto</h2>
-<input type="text" id="productName" placeholder="Producto">
-<input type="number" id="myPrice" placeholder="Tu Precio">
-<input type="number" id="competitorPrice" placeholder="Precio Competidor">
-<button onclick="addProduct()">Guardar</button>
-
-<h2>Productos</h2>
-<table id="productsTable"></table>
-
-<h2>Historial</h2>
-<canvas id="chart"></canvas>
-
-</div>
-
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } 
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, where, onSnapshot } 
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  query, 
+  where, 
+  onSnapshot,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "TU_API_KEY",
@@ -110,17 +37,32 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 let currentUser = null;
+let isPro = false;
+let chartInstance = null;
 
+// ==========================
 // REGISTRO
-window.register = function(){
-  createUserWithEmailAndPassword(
-    auth,
-    document.getElementById("email").value,
-    document.getElementById("password").value
-  );
+// ==========================
+window.register = async function(){
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const userCred = await createUserWithEmailAndPassword(auth,email,password);
+
+  // Crear documento usuario en Firestore
+  await setDoc(doc(db,"users",userCred.user.uid),{
+    email: email,
+    isPro: false,
+    createdAt: new Date()
+  });
+
+  alert("Usuario creado correctamente");
 }
 
+// ==========================
 // LOGIN
+// ==========================
 window.login = function(){
   signInWithEmailAndPassword(
     auth,
@@ -129,23 +71,84 @@ window.login = function(){
   );
 }
 
+// ==========================
 // LOGOUT
+// ==========================
 window.logout = function(){
   signOut(auth);
+  location.reload();
 }
 
-// Detectar usuario activo
-onAuthStateChanged(auth, user=>{
+// ==========================
+// PASAR A PRO
+// ==========================
+window.goPro = async function(){
+
+  if(!currentUser){
+    alert("Debes iniciar sesión");
+    return;
+  }
+
+  const response = await fetch("/.netlify/functions/create-checkout",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      uid: currentUser.uid,
+      email: currentUser.email
+    })
+  });
+
+  const data = await response.json();
+
+  if(data.url){
+    window.location.href = data.url;
+  } else {
+    alert("Error al crear sesión de pago");
+  }
+}
+
+// ==========================
+// DETECTAR USUARIO ACTIVO
+// ==========================
+onAuthStateChanged(auth, async user=>{
+
   if(user){
     currentUser = user;
+
+    const userDoc = await getDoc(doc(db,"users",user.uid));
+    isPro = userDoc.data()?.isPro || false;
+
+    if(isPro){
+      document.querySelector(".pro-btn").innerText = "Plan PRO Activo";
+      document.querySelector(".pro-btn").disabled = true;
+      document.querySelector(".pro-btn").style.background = "#6b7280";
+    }
+
     loadProducts();
+    initChart();
   }
 });
 
+// ==========================
 // AGREGAR PRODUCTO
+// ==========================
 window.addProduct = async function(){
+
   if(!currentUser){
     alert("Debes iniciar sesión");
+    return;
+  }
+
+  // Limite FREE
+  const q = query(
+    collection(db,"products"),
+    where("user","==",currentUser.uid)
+  );
+
+  const snapshot = await getDocs(q);
+
+  if(!isPro && snapshot.size >= 3){
+    alert("Plan Free limitado a 3 productos. Actualiza a PRO.");
     return;
   }
 
@@ -158,7 +161,9 @@ window.addProduct = async function(){
   });
 }
 
+// ==========================
 // CARGAR PRODUCTOS
+// ==========================
 function loadProducts(){
 
   const q = query(
@@ -180,8 +185,8 @@ function loadProducts(){
       table += `
       <tr>
         <td>${data.name}</td>
-        <td>${data.myPrice}</td>
-        <td>${data.competitorPrice}</td>
+        <td>${data.myPrice} €</td>
+        <td>${data.competitorPrice} €</td>
         <td>${estado}</td>
       </tr>
       `;
@@ -191,45 +196,52 @@ function loadProducts(){
   });
 }
 
-// GRÁFICA
-const ctx = document.getElementById('chart');
+// ==========================
+// INICIALIZAR GRÁFICA
+// ==========================
+function initChart(){
 
-const chart = new Chart(ctx,{
-  type:'line',
-  data:{
-    labels:[],
-    datasets:[
-      {
-        label:'Mi Precio',
-        data:[],
-        borderColor:'#2563eb'
-      },
-      {
-        label:'Competidor',
-        data:[],
-        borderColor:'#ef4444'
-      }
-    ]
-  }
-});
+  const ctx = document.getElementById('chart');
 
-// Escuchar historial
-onSnapshot(collection(db,"products"), snapshot=>{
-  chart.data.labels=[];
-  chart.data.datasets[0].data=[];
-  chart.data.datasets[1].data=[];
+  const q = query(
+    collection(db,"products"),
+    where("user","==",currentUser.uid)
+  );
 
-  snapshot.forEach(doc=>{
-    let d=doc.data();
-    chart.data.labels.push(d.name);
-    chart.data.datasets[0].data.push(d.myPrice);
-    chart.data.datasets[1].data.push(d.competitorPrice);
+  chartInstance = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:[],
+      datasets:[
+        {
+          label:'Mi Precio',
+          data:[],
+          borderColor:'#2563eb'
+        },
+        {
+          label:'Competidor',
+          data:[],
+          borderColor:'#ef4444'
+        }
+      ]
+    }
   });
 
-  chart.update();
-});
+  onSnapshot(q, snapshot=>{
+
+    chartInstance.data.labels=[];
+    chartInstance.data.datasets[0].data=[];
+    chartInstance.data.datasets[1].data=[];
+
+    snapshot.forEach(doc=>{
+      let d=doc.data();
+      chartInstance.data.labels.push(d.name);
+      chartInstance.data.datasets[0].data.push(d.myPrice);
+      chartInstance.data.datasets[1].data.push(d.competitorPrice);
+    });
+
+    chartInstance.update();
+  });
+}
 
 </script>
-
-</body>
-</html>
