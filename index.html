@@ -16,108 +16,11 @@ body{
   color:#1f2937;
 }
 header{
- <div class="container">
-
-<!-- DASHBOARD KPI -->
-<div class="card">
-<h2>📊 Dashboard KPI</h2>
-<div class="kpi-grid">
-  <div class="kpi-box">
-    <h3 id="kpiTotal">0</h3>
-    <p>Total Productos</p>
-  </div>
-  <div class="kpi-box danger">
-    <h3 id="kpiRisk">0</h3>
-    <p>En Riesgo</p>
-  </div>
-  <div class="kpi-box">
-    <h3 id="kpiAvg">0€</h3>
-    <p>Precio Medio</p>
-  </div>
-  <div class="kpi-box">
-    <h3 id="kpiDiff">0€</h3>
-    <p>Diferencia Media</p>
-  </div>
-  <div class="kpi-box success">
-    <h3 id="kpiPercent">0%</h3>
-    <p>% Competitividad</p>
-  </div>
-</div>
-</div>
-  .kpi-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-  gap:15px;
-  margin-top:15px;
-}
-
-.kpi-box{
-  background:white;
-  padding:20px;
-  border-radius:12px;
+  background:#2563eb;
+  color:white;
+  padding:30px;
   text-align:center;
-  box-shadow:0 5px 15px rgba(0,0,0,0.08);
 }
-
-.kpi-box h3{
-  font-size:28px;
-  margin:0;
-  color:#2563eb;
-}
-
-.kpi-box p{
-  margin:5px 0 0;
-  font-weight:600;
-  color:#6b7280;
-}
-
-.kpi-box.danger h3{
-  color:#dc2626;
-}
-
-.kpi-box.success h3{
-  color:#16a34a;
-}
-<!-- LOGIN -->
-<div class="card">
-<h2>Registro / Login</h2>
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Contraseña">
-<button onclick="register()">Registrarse</button>
-<button onclick="login()">Login</button>
-<button onclick="logout()">Logout</button>
-</div>
-
-<!-- PLAN PRO -->
-<div class="card">
-<h2>Plan Pro</h2>
-<p>Usuarios FREE: máximo 3 productos</p>
-<p>Usuarios PRO: productos ilimitados + historial completo</p>
-<button class="pro-btn" onclick="goPro()">Pasar a Pro - 10€/mes</button>
-</div>
-
-<!-- AGREGAR PRODUCTO -->
-<div class="card">
-<h2>Agregar Producto</h2>
-<input type="text" id="productName" placeholder="Producto">
-<input type="number" id="myPrice" placeholder="Tu Precio">
-<input type="number" id="competitorPrice" placeholder="Precio Competidor">
-<button onclick="addProduct()">Guardar</button>
-</div>
-
-<!-- PRODUCTOS -->
-<div class="card">
-<h2>Productos</h2>
-<table id="productsTable"></table>
-</div>
-
-<!-- HISTORIAL -->
-<div class="card">
-<h2>Historial</h2>
-<canvas id="chart"></canvas>
-</div>
-
-</div>
 h2{
   margin-top:30px;
 }
@@ -181,6 +84,37 @@ tr:hover{
   border-radius:12px;
   margin-top:15px;
 }
+
+/* 🔥 Dashboard KPI */
+.kpi-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:15px;
+  margin-top:15px;
+}
+.kpi-box{
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  text-align:center;
+  box-shadow:0 5px 15px rgba(0,0,0,0.08);
+}
+.kpi-box h3{
+  font-size:28px;
+  margin:0;
+  color:#2563eb;
+}
+.kpi-box p{
+  margin:5px 0 0;
+  font-weight:600;
+  color:#6b7280;
+}
+.kpi-box.danger h3{
+  color:#dc2626;
+}
+.kpi-box.success h3{
+  color:#16a34a;
+}
 </style>
 </head>
 
@@ -193,6 +127,19 @@ tr:hover{
 
 <div class="container">
 
+<!-- DASHBOARD KPI -->
+<div class="card">
+<h2>📊 Dashboard KPI</h2>
+<div class="kpi-grid">
+  <div class="kpi-box"><h3 id="kpiTotal">0</h3><p>Total Productos</p></div>
+  <div class="kpi-box danger"><h3 id="kpiRisk">0</h3><p>En Riesgo</p></div>
+  <div class="kpi-box"><h3 id="kpiAvg">0€</h3><p>Precio Medio</p></div>
+  <div class="kpi-box"><h3 id="kpiDiff">0€</h3><p>Diferencia Media</p></div>
+  <div class="kpi-box success"><h3 id="kpiPercent">0%</h3><p>% Competitividad</p></div>
+</div>
+</div>
+
+<!-- LOGIN -->
 <div class="card">
 <h2>Registro / Login</h2>
 <input type="email" id="email" placeholder="Email">
@@ -202,6 +149,7 @@ tr:hover{
 <button onclick="logout()">Logout</button>
 </div>
 
+<!-- PLAN PRO -->
 <div class="card">
 <h2>Plan Pro</h2>
 <p>Usuarios FREE: máximo 3 productos</p>
@@ -209,6 +157,7 @@ tr:hover{
 <button class="pro-btn" onclick="goPro()">Pasar a Pro - 10€/mes</button>
 </div>
 
+<!-- AGREGAR PRODUCTO -->
 <div class="card">
 <h2>Agregar Producto</h2>
 <input type="text" id="productName" placeholder="Producto">
@@ -217,11 +166,13 @@ tr:hover{
 <button onclick="addProduct()">Guardar</button>
 </div>
 
+<!-- PRODUCTOS -->
 <div class="card">
 <h2>Productos</h2>
 <table id="productsTable"></table>
 </div>
 
+<!-- HISTORIAL -->
 <div class="card">
 <h2>Historial</h2>
 <canvas id="chart"></canvas>
@@ -361,6 +312,8 @@ function loadProducts(){
     productsTable.innerHTML=table;
   });
 }
+
+// KPIs
 function updateKPIs(snapshot){
 
   let total=0;
@@ -389,6 +342,7 @@ function updateKPIs(snapshot){
   document.getElementById("kpiDiff").innerText=avgDiff.toFixed(2)+"€";
   document.getElementById("kpiPercent").innerText=percent.toFixed(1)+"%";
 }
+
 // GRÁFICA
 const chart=new Chart(document.getElementById("chart"),{
   type:"line",
