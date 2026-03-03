@@ -98,27 +98,10 @@ th,td{
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-  getAuth, 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  query, 
-  where, 
-  onSnapshot,
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, where, onSnapshot, doc } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "TU_API_KEY",
@@ -134,61 +117,20 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 let currentUser = null;
-let isPro = false;
-let chartInstance = null;
+let selectedProductId = null;
 
-// ==========================
-// REGISTRO
-// ==========================
-window.register = async function(){
+// AUTH
+window.register = ()=> createUserWithEmailAndPassword(auth,email.value,password.value);
+window.login = ()=> signInWithEmailAndPassword(auth,email.value,password.value);
+window.logout = ()=> signOut(auth);
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  const userCred = await createUserWithEmailAndPassword(auth,email,password);
-
-  // Crear documento usuario en Firestore
-  await setDoc(doc(db,"users",userCred.user.uid),{
-    email: email,
-    isPro: false,
-    createdAt: new Date()
-  });
-
-  alert("Usuario creado correctamente");
-}
-
-// ==========================
-// LOGIN
-// ==========================
-window.login = function(){
-  signInWithEmailAndPassword(
-    auth,
-    document.getElementById("email").value,
-    document.getElementById("password").value
-  );
-}
-
-// ==========================
-// LOGOUT
-// ==========================
-window.logout = function(){
-  signOut(auth);
-  location.reload();
-}
-
-// ==========================
-// PASAR A PRO
-// ==========================
+// PRO
 window.goPro = async function(){
-
-  if(!currentUser){
-    alert("Debes iniciar sesión");
-    return;
-  }
+  if(!currentUser) return alert("Debes iniciar sesión");
 
   const response = await fetch("/.netlify/functions/create-checkout",{
     method:"POST",
-    headers:{ "Content-Type":"application/json" },
+    headers:{ "Content-Type":"application/json"},
     body: JSON.stringify({
       uid: currentUser.uid,
       email: currentUser.email
@@ -196,71 +138,38 @@ window.goPro = async function(){
   });
 
   const data = await response.json();
-
-  if(data.url){
-    window.location.href = data.url;
-  } else {
-    alert("Error al crear sesión de pago");
-  }
+  if(data.url) window.location.href = data.url;
 }
 
-// ==========================
-// DETECTAR USUARIO ACTIVO
-// ==========================
-onAuthStateChanged(auth, async user=>{
-
+// DETECTAR USUARIO
+onAuthStateChanged(auth,user=>{
   if(user){
     currentUser = user;
-
-    const userDoc = await getDoc(doc(db,"users",user.uid));
-    isPro = userDoc.data()?.isPro || false;
-
-    if(isPro){
-      document.querySelector(".pro-btn").innerText = "Plan PRO Activo";
-      document.querySelector(".pro-btn").disabled = true;
-      document.querySelector(".pro-btn").style.background = "#6b7280";
-    }
-
     loadProducts();
-    initChart();
   }
 });
 
-// ==========================
-// AGREGAR PRODUCTO
-// ==========================
+// AGREGAR PRODUCTO + HISTORIAL
 window.addProduct = async function(){
+  if(!currentUser) return alert("Login requerido");
 
-  if(!currentUser){
-    alert("Debes iniciar sesión");
-    return;
-  }
-
-  // Limite FREE
-  const q = query(
-    collection(db,"products"),
-    where("user","==",currentUser.uid)
-  );
-
-  const snapshot = await getDocs(q);
-
-  if(!isPro && snapshot.size >= 3){
-    alert("Plan Free limitado a 3 productos. Actualiza a PRO.");
-    return;
-  }
-
-  await addDoc(collection(db,"products"),{
+  const productRef = await addDoc(collection(db,"products"),{
     user: currentUser.uid,
-    name: document.getElementById("productName").value,
-    myPrice: Number(document.getElementById("myPrice").value),
-    competitorPrice: Number(document.getElementById("competitorPrice").value),
+    name: productName.value,
+    myPrice: Number(myPrice.value),
+    competitorPrice: Number(competitorPrice.value),
     timestamp: new Date()
+  });
+
+  // GUARDAR HISTORIAL
+  await addDoc(collection(db,"products",productRef.id,"history"),{
+    myPrice: Number(myPrice.value),
+    competitorPrice: Number(competitorPrice.value),
+    date: new Date()
   });
 }
 
-// ==========================
 // CARGAR PRODUCTOS
-// ==========================
 function loadProducts(){
 
   const q = query(
@@ -268,80 +177,85 @@ function loadProducts(){
     where("user","==",currentUser.uid)
   );
 
-  onSnapshot(q, snapshot=>{
+  onSnapshot(q,snapshot=>{
 
     let table="<tr><th>Producto</th><th>Mi Precio</th><th>Competidor</th><th>Estado</th></tr>";
 
-    snapshot.forEach(doc=>{
-      let data=doc.data();
-
+    snapshot.forEach(docSnap=>{
+      let data=docSnap.data();
       let estado = data.competitorPrice < data.myPrice 
-      ? "<span class='alert'>Más barato</span>" 
-      : "<span class='normal'>OK</span>";
+        ? "<span class='alert'>Más barato</span>" 
+        : "<span class='normal'>OK</span>";
 
-      table += `
-      <tr>
+      table+=`
+      <tr onclick="selectProduct('${docSnap.id}','${data.name}')">
         <td>${data.name}</td>
-        <td>${data.myPrice} €</td>
-        <td>${data.competitorPrice} €</td>
+        <td>${data.myPrice}</td>
+        <td>${data.competitorPrice}</td>
         <td>${estado}</td>
-      </tr>
-      `;
+      </tr>`;
     });
 
-    document.getElementById("productsTable").innerHTML=table;
+    productsTable.innerHTML=table;
   });
 }
 
-// ==========================
-// INICIALIZAR GRÁFICA
-// ==========================
-function initChart(){
+// SELECCIONAR PRODUCTO PARA VER HISTORIAL
+window.selectProduct = function(productId,name){
+  selectedProductId = productId;
+  loadHistory(productId,name);
+}
 
-  const ctx = document.getElementById('chart');
+// GRÁFICA
+const chart = new Chart(document.getElementById("chart"),{
+  type:'line',
+  data:{
+    labels:[],
+    datasets:[
+      {
+        label:'Mi Precio',
+        data:[],
+        borderColor:'#2563eb'
+      },
+      {
+        label:'Competidor',
+        data:[],
+        borderColor:'#ef4444'
+      }
+    ]
+  }
+});
 
-  const q = query(
-    collection(db,"products"),
-    where("user","==",currentUser.uid)
-  );
+// CARGAR HISTORIAL REAL
+function loadHistory(productId,name){
 
-  chartInstance = new Chart(ctx,{
-    type:'line',
-    data:{
-      labels:[],
-      datasets:[
-        {
-          label:'Mi Precio',
-          data:[],
-          borderColor:'#2563eb'
-        },
-        {
-          label:'Competidor',
-          data:[],
-          borderColor:'#ef4444'
-        }
-      ]
-    }
-  });
+  const historyRef = collection(db,"products",productId,"history");
 
-  onSnapshot(q, snapshot=>{
+  onSnapshot(historyRef,snapshot=>{
 
-    chartInstance.data.labels=[];
-    chartInstance.data.datasets[0].data=[];
-    chartInstance.data.datasets[1].data=[];
+    chart.data.labels=[];
+    chart.data.datasets[0].data=[];
+    chart.data.datasets[1].data=[];
 
     snapshot.forEach(doc=>{
-      let d=doc.data();
-      chartInstance.data.labels.push(d.name);
-      chartInstance.data.datasets[0].data.push(d.myPrice);
-      chartInstance.data.datasets[1].data.push(d.competitorPrice);
+      const d=doc.data();
+      chart.data.labels.push(new Date(d.date.seconds*1000).toLocaleDateString());
+      chart.data.datasets[0].data.push(d.myPrice);
+      chart.data.datasets[1].data.push(d.competitorPrice);
     });
 
-    chartInstance.update();
+    chart.options.plugins = {
+      title:{
+        display:true,
+        text:"Historial de "+name
+      }
+    };
+
+    chart.update();
   });
 }
 
 </script>
-  
+
 </body>
 </html>
