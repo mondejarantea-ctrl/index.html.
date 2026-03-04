@@ -15,83 +15,91 @@ body{
   margin:0;
   color:#1f2937;
 }
+
 header{
   background:#2563eb;
   color:white;
-  padding:30px;
-  text-align:center;
-}
-h2{
-  margin-top:30px;
-}
-input,button{
-  padding:10px;
-  margin:5px;
-  border-radius:8px;
-  border:1px solid #ddd;
-}
-button{
-  background:#2563eb;
-  color:white;
-  border:none;
-  cursor:pointer;
-  font-weight:600;
-}
-button:hover{
-  opacity:0.9;
-}
-.pro-btn{
-  background:#16a34a;
-}
-.badge{
-  padding:5px 12px;
-  border-radius:20px;
-  font-size:12px;
-  font-weight:700;
-}
-.pro{
-  background:#16a34a;
-  color:white;
-}
-.free{
-  background:#9ca3af;
-  color:white;
-}
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:10px;
-}
-th,td{
-  padding:12px;
-  border-bottom:1px solid #eee;
-}
-tr:hover{
-  background:#f9fafb;
-  cursor:pointer;
-}
-.alert{
-  color:#dc2626;
-  font-weight:700;
-}
-.normal{
-  color:#16a34a;
-  font-weight:700;
-}
-.card{
-  background:#f8fafc;
-  padding:20px;
-  border-radius:12px;
-  margin-top:15px;
+  padding:20px 30px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
-/* 🔥 Dashboard KPI */
+.profile-area{
+  display:flex;
+  align-items:center;
+  gap:15px;
+}
+
+.trial-counter{
+  background:#f59e0b;
+  padding:6px 12px;
+  border-radius:20px;
+  font-weight:600;
+  font-size:13px;
+}
+
+.plan-badge{
+  background:#111827;
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:13px;
+}
+
+.pro-highlight{
+  background:linear-gradient(135deg,#f59e0b,#ef4444);
+  color:white;
+  padding:25px;
+  border-radius:20px;
+  margin:20px auto;
+  max-width:1200px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.25);
+  text-align:center;
+}
+
+.pro-highlight h2{
+  margin:0 0 10px 0;
+  font-size:26px;
+}
+
+.pro-highlight ul{
+  list-style:none;
+  padding:0;
+  margin:15px 0;
+}
+
+.pro-highlight li{
+  margin:8px 0;
+  font-weight:500;
+}
+
+.upgrade-btn{
+  background:white;
+  color:#ef4444;
+  padding:12px 20px;
+  border-radius:12px;
+  font-weight:700;
+  cursor:pointer;
+  border:none;
+  font-size:16px;
+}
+
+.card{
+  background:#fff;
+  padding:25px;
+  border-radius:16px;
+  margin:20px auto;
+  max-width:1200px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.05);
+}
+
 .kpi-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
   gap:15px;
   margin-top:15px;
 }
+
 .kpi-box{
   background:white;
   padding:20px;
@@ -99,284 +107,260 @@ tr:hover{
   text-align:center;
   box-shadow:0 5px 15px rgba(0,0,0,0.08);
 }
+
 .kpi-box h3{
-  font-size:28px;
+  font-size:26px;
   margin:0;
   color:#2563eb;
 }
-.kpi-box p{
-  margin:5px 0 0;
+
+button{
+  cursor:pointer;
+  background:#2563eb;
+  color:white;
+  border:none;
+  padding:10px 14px;
+  border-radius:8px;
+}
+
+input{
+  padding:10px;
+  margin:5px 0;
+  border-radius:8px;
+  border:1px solid #ddd;
+}
+
+.alert-banner{
+  background:#dc2626;
+  color:white;
+  padding:12px;
+  text-align:center;
   font-weight:600;
-  color:#6b7280;
+  display:none;
 }
-.kpi-box.danger h3{
-  color:#dc2626;
+
+.toast{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#111827;
+  color:white;
+  padding:14px 18px;
+  border-radius:12px;
+  opacity:0;
+  transform:translateY(20px);
+  transition:0.3s;
 }
-.kpi-box.success h3{
-  color:#16a34a;
+
+.toast.show{
+  opacity:1;
+  transform:translateY(0);
 }
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+}
+
+th,td{
+  padding:12px;
+  border-bottom:1px solid #eee;
+}
+
+.alert{color:#dc2626;font-weight:700;}
+.normal{color:#16a34a;font-weight:700;}
+.recommend{color:#f59e0b;font-weight:700;}
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>🚀 PriceGuard Monitor Profesional</h1>
-<span id="planStatus" class="badge free">FREE</span>
+<h1>🚀 PriceGuard</h1>
+<div class="profile-area">
+<span id="trialCounter" class="trial-counter"></span>
+<span class="plan-badge">FREE</span>
+</div>
 </header>
 
-<div class="container">
-
-<!-- DASHBOARD KPI -->
-<div class="card">
-<h2>📊 Dashboard KPI</h2>
-<div class="kpi-grid">
-  <div class="kpi-box"><h3 id="kpiTotal">0</h3><p>Total Productos</p></div>
-  <div class="kpi-box danger"><h3 id="kpiRisk">0</h3><p>En Riesgo</p></div>
-  <div class="kpi-box"><h3 id="kpiAvg">0€</h3><p>Precio Medio</p></div>
-  <div class="kpi-box"><h3 id="kpiDiff">0€</h3><p>Diferencia Media</p></div>
-  <div class="kpi-box success"><h3 id="kpiPercent">0%</h3><p>% Competitividad</p></div>
-</div>
+<div id="riskBanner" class="alert-banner">
+⚠️ Atención: Productos en riesgo detectados
 </div>
 
-<!-- LOGIN -->
-<div class="card">
-<h2>Registro / Login</h2>
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Contraseña">
-<button onclick="register()">Registrarse</button>
-<button onclick="login()">Login</button>
-<button onclick="logout()">Logout</button>
+<div id="toast" class="toast"></div>
+
+<div class="pro-highlight">
+<h2>🔥 Desbloquea PriceGuard PRO</h2>
+<p>Automatiza tu estrategia de precios y maximiza beneficios</p>
+<ul>
+<li>✔ Alertas ilimitadas</li>
+<li>✔ Emails automáticos</li>
+<li>✔ Dashboard avanzado</li>
+<li>✔ Optimización estratégica</li>
+<li>✔ Sin límites tras periodo gratuito</li>
+</ul>
+<p><strong>Potencial aumento de margen hasta +20%</strong></p>
+<button class="upgrade-btn">ACTUALIZAR A PRO</button>
 </div>
 
-<!-- PLAN PRO -->
-<div class="card">
-<h2>Plan Pro</h2>
-<p>Usuarios FREE: máximo 3 productos</p>
-<p>Usuarios PRO: productos ilimitados + historial completo</p>
-<button class="pro-btn" onclick="goPro()">Pasar a Pro - 10€/mes</button>
-</div>
-
-<!-- AGREGAR PRODUCTO -->
 <div class="card">
 <h2>Agregar Producto</h2>
 <input type="text" id="productName" placeholder="Producto">
 <input type="number" id="myPrice" placeholder="Tu Precio">
 <input type="number" id="competitorPrice" placeholder="Precio Competidor">
 <button onclick="addProduct()">Guardar</button>
+<p id="blockedMessage" style="color:#dc2626;font-weight:600;"></p>
 </div>
 
-<!-- PRODUCTOS -->
+<div class="card">
+<h2>📊 Dashboard Avanzado</h2>
+<div class="kpi-grid">
+  <div class="kpi-box"><h3 id="kpiTotal">0</h3><p>Total Productos</p></div>
+  <div class="kpi-box"><h3 id="kpiRisk">0</h3><p>En Riesgo</p></div>
+  <div class="kpi-box"><h3 id="kpiMargin">0€</h3><p>Margen Medio Estimado</p></div>
+  <div class="kpi-box"><h3 id="kpiLost">0€</h3><p>Valor Potencial Perdido</p></div>
+  <div class="kpi-box"><h3 id="kpiRiskPercent">0%</h3><p>% Riesgo</p></div>
+</div>
+<canvas id="priceChart" style="margin-top:25px;"></canvas>
+</div>
+
 <div class="card">
 <h2>Productos</h2>
 <table id="productsTable"></table>
 </div>
 
-<!-- HISTORIAL -->
-<div class="card">
-<h2>Historial</h2>
-<canvas id="chart"></canvas>
-</div>
+<script>
 
-</div>
+const TRIAL_DAYS = 30;
+const ALERT_THRESHOLD_PERCENT = 5;
 
-<script type="module">
+let products = [];
+let trialStart = localStorage.getItem("trialStart") || Date.now();
+localStorage.setItem("trialStart", trialStart);
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } 
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, where, onSnapshot, doc, setDoc, getDoc, getDocs } 
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "priceguard-6da48.firebaseapp.com",
-  projectId: "priceguard-6da48",
-  storageBucket: "priceguard-6da48.appspot.com",
-  messagingSenderId: "916598874837",
-  appId: "TU_APP_ID"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-let currentUser=null;
-let isPro=false;
-
-// AUTH
-window.register = async ()=>{
-  const cred = await createUserWithEmailAndPassword(auth,email.value,password.value);
-  await setDoc(doc(db,"users",cred.user.uid),{
-    email:cred.user.email,
-    isPro:false,
-    createdAt:new Date()
-  });
+function getRemainingDays(){
+  const diff = Date.now() - trialStart;
+  const used = diff/(1000*60*60*24);
+  return Math.max(0, Math.ceil(TRIAL_DAYS-used));
 }
 
-window.login = ()=> signInWithEmailAndPassword(auth,email.value,password.value);
-window.logout = ()=> signOut(auth);
-
-// DETECTAR USUARIO
-onAuthStateChanged(auth, async user=>{
-  if(user){
-    currentUser=user;
-    const userDoc = await getDoc(doc(db,"users",user.uid));
-    isPro = userDoc.data()?.isPro || false;
-    updateBadge();
-    loadProducts();
-  }
-});
-
-// BADGE PLAN
-function updateBadge(){
-  const badge=document.getElementById("planStatus");
-  if(isPro){
-    badge.innerText="PRO";
-    badge.className="badge pro";
-  }else{
-    badge.innerText="FREE";
-    badge.className="badge free";
-  }
+function isTrialActive(){
+  return getRemainingDays()>0;
 }
 
-// PLAN PRO
-window.goPro = async function(){
-  if(!currentUser) return alert("Debes iniciar sesión");
+function updateTrialUI(){
+  document.getElementById("trialCounter").innerText =
+    getRemainingDays()>0 ?
+    `⏳ ${getRemainingDays()} días gratis` :
+    "Trial finalizado";
+}
+updateTrialUI();
 
-  const response = await fetch("/.netlify/functions/create-checkout",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json"},
-    body: JSON.stringify({
-      uid: currentUser.uid,
-      email: currentUser.email
-    })
-  });
-
-  const data = await response.json();
-  if(data.url) window.location.href=data.url;
+function showToast(msg){
+  const t=document.getElementById("toast");
+  t.innerText=msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),4000);
 }
 
-// AGREGAR PRODUCTO
-window.addProduct = async function(){
-  if(!currentUser) return alert("Login requerido");
+function getRecommendedPrice(my,comp){
+  return (comp-0.01).toFixed(2);
+}
 
-  const q = query(collection(db,"products"), where("user","==",currentUser.uid));
-  const snapshot = await getDocs(q);
-
-  if(!isPro && snapshot.size>=3){
-    alert("Límite FREE alcanzado. Pásate a PRO.");
+function addProduct(){
+  if(!isTrialActive()){
+    document.getElementById("blockedMessage").innerText =
+      "⚠️ Tu periodo gratuito terminó. Actualiza a PRO.";
     return;
   }
 
-  const productRef = await addDoc(collection(db,"products"),{
-    user:currentUser.uid,
-    name:productName.value,
-    myPrice:Number(myPrice.value),
-    competitorPrice:Number(competitorPrice.value),
-    timestamp:new Date()
-  });
+  const name=document.getElementById("productName").value;
+  const myPrice=Number(document.getElementById("myPrice").value);
+  const competitorPrice=Number(document.getElementById("competitorPrice").value);
 
-  await addDoc(collection(db,"products",productRef.id,"history"),{
-    myPrice:Number(myPrice.value),
-    competitorPrice:Number(competitorPrice.value),
-    date:new Date()
-  });
+  if(!name||!myPrice||!competitorPrice) return;
+
+  products.push({name,myPrice,competitorPrice});
+  renderProducts();
+  updateDashboard();
 }
 
-// CARGAR PRODUCTOS
-function loadProducts(){
-  const q=query(collection(db,"products"),where("user","==",currentUser.uid));
+function renderProducts(){
+  let table="<tr><th>Producto</th><th>Mi Precio</th><th>Competidor</th><th>Estado</th><th>Recomendado</th></tr>";
 
-  onSnapshot(q,snapshot=>{
+  products.forEach(p=>{
+    const diff=p.myPrice-p.competitorPrice;
+    const percent=(diff/p.myPrice)*100;
 
-    let table="<tr><th>Producto</th><th>Mi Precio</th><th>Competidor</th><th>Estado</th></tr>";
+    let estado="<span class='normal'>🟢 Competitivo</span>";
+    let recomendado="-";
 
-    updateKPIs(snapshot);
+    if(percent>ALERT_THRESHOLD_PERCENT){
+      estado="<span class='alert'>🔴 En Riesgo</span>";
+      recomendado="<span class='recommend'>"+getRecommendedPrice(p.myPrice,p.competitorPrice)+"€</span>";
+      showToast("🚨 Producto en riesgo detectado");
+    }
 
-    snapshot.forEach(docSnap=>{
-      const data=docSnap.data();
-      const estado=data.competitorPrice<data.myPrice
-        ?"<span class='alert'>Más barato</span>"
-        :"<span class='normal'>OK</span>";
-
-      table+=`
-      <tr onclick="loadHistory('${docSnap.id}','${data.name}')">
-        <td>${data.name}</td>
-        <td>${data.myPrice}</td>
-        <td>${data.competitorPrice}</td>
-        <td>${estado}</td>
-      </tr>`;
-    });
-
-    productsTable.innerHTML=table;
+    table+=`<tr>
+      <td>${p.name}</td>
+      <td>${p.myPrice}€</td>
+      <td>${p.competitorPrice}€</td>
+      <td>${estado}</td>
+      <td>${recomendado}</td>
+    </tr>`;
   });
+
+  document.getElementById("productsTable").innerHTML=table;
 }
 
-// KPIs
-function updateKPIs(snapshot){
+let chart = new Chart(document.getElementById("priceChart"),{
+  type:"line",
+  data:{labels:[],datasets:[
+    {label:"Tu Precio",data:[],borderWidth:2},
+    {label:"Competidor",data:[],borderWidth:2}
+  ]}
+});
 
-  let total=0;
+function updateDashboard(){
+  let total=products.length;
   let risk=0;
-  let sumMy=0;
-  let sumDiff=0;
+  let sumMargin=0;
+  let lostValue=0;
 
-  snapshot.forEach(doc=>{
-    const d=doc.data();
-    total++;
-    sumMy+=d.myPrice;
+  const labels=[];
+  const myData=[];
+  const compData=[];
 
-    const diff=d.myPrice-d.competitorPrice;
-    sumDiff+=diff;
+  products.forEach(p=>{
+    const diff=p.myPrice-p.competitorPrice;
+    const percent=(diff/p.myPrice)*100;
 
-    if(d.competitorPrice<d.myPrice) risk++;
+    if(percent>ALERT_THRESHOLD_PERCENT){
+      risk++;
+      lostValue+=diff;
+    }
+
+    sumMargin+=diff;
+    labels.push(p.name);
+    myData.push(p.myPrice);
+    compData.push(p.competitorPrice);
   });
-
-  const avgPrice= total? (sumMy/total):0;
-  const avgDiff= total? (sumDiff/total):0;
-  const percent= total? (((total-risk)/total)*100):0;
 
   document.getElementById("kpiTotal").innerText=total;
   document.getElementById("kpiRisk").innerText=risk;
-  document.getElementById("kpiAvg").innerText=avgPrice.toFixed(2)+"€";
-  document.getElementById("kpiDiff").innerText=avgDiff.toFixed(2)+"€";
-  document.getElementById("kpiPercent").innerText=percent.toFixed(1)+"%";
-}
+  document.getElementById("kpiMargin").innerText=(sumMargin/total||0).toFixed(2)+"€";
+  document.getElementById("kpiLost").innerText=lostValue.toFixed(2)+"€";
+  document.getElementById("kpiRiskPercent").innerText=
+    ((risk/total)*100||0).toFixed(1)+"%";
 
-// GRÁFICA
-const chart=new Chart(document.getElementById("chart"),{
-  type:"line",
-  data:{
-    labels:[],
-    datasets:[
-      {label:"Mi Precio",data:[],borderColor:"#2563eb"},
-      {label:"Competidor",data:[],borderColor:"#ef4444"}
-    ]
-  }
-});
+  document.getElementById("riskBanner").style.display =
+    risk>0?"block":"none";
 
-// HISTORIAL
-window.loadHistory=function(productId,name){
-  const historyRef=collection(db,"products",productId,"history");
-
-  onSnapshot(historyRef,snapshot=>{
-    chart.data.labels=[];
-    chart.data.datasets[0].data=[];
-    chart.data.datasets[1].data=[];
-
-    snapshot.forEach(doc=>{
-      const d=doc.data();
-      chart.data.labels.push(new Date(d.date.seconds*1000).toLocaleDateString());
-      chart.data.datasets[0].data.push(d.myPrice);
-      chart.data.datasets[1].data.push(d.competitorPrice);
-    });
-
-    chart.options.plugins={
-      title:{display:true,text:"Historial de "+name}
-    };
-
-    chart.update();
-  });
+  chart.data.labels=labels;
+  chart.data.datasets[0].data=myData;
+  chart.data.datasets[1].data=compData;
+  chart.update();
 }
 
 </script>
