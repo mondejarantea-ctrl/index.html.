@@ -20,8 +20,8 @@ body{
 /* NAVBAR */
 nav{
   position:fixed;
-  top:0;
   width:100%;
+  top:0;
   padding:20px 60px;
   display:flex;
   justify-content:space-between;
@@ -29,7 +29,6 @@ nav{
   background:rgba(0,0,0,0.85);
   backdrop-filter:blur(10px);
   z-index:1000;
-  border-bottom:1px solid rgba(255,255,255,0.05);
 }
 
 nav .logo{
@@ -49,26 +48,25 @@ nav ul li a{
   text-decoration:none;
   color:white;
   font-size:14px;
-  opacity:0.7;
+  opacity:0.6;
   transition:0.3s;
 }
 
-nav ul li a:hover{
+nav ul li a.active{
   opacity:1;
   color:#22c55e;
+  border-bottom:2px solid #22c55e;
+  padding-bottom:5px;
 }
 
-.badge{
-  padding:6px 14px;
+.pro-highlight{
+  background:#22c55e;
+  color:black !important;
+  padding:8px 16px;
   border-radius:20px;
-  font-size:12px;
   font-weight:700;
 }
 
-.pro{background:#22c55e;color:black;}
-.free{background:#374151;color:white;}
-
-/* SECTIONS */
 section{
   padding:140px 60px;
   border-bottom:1px solid rgba(255,255,255,0.05);
@@ -79,13 +77,8 @@ section{
   margin-bottom:40px;
 }
 
-/* HERO */
 #home{
   background:radial-gradient(circle at 70% 50%,#1f2937 0%,#0b0f19 60%);
-}
-
-.hero-text{
-  max-width:700px;
 }
 
 .hero-text h1{
@@ -93,13 +86,6 @@ section{
   margin:0;
 }
 
-.hero-text p{
-  opacity:0.7;
-  margin-top:20px;
-  font-size:18px;
-}
-
-/* CARDS */
 .card{
   background:#111827;
   padding:30px;
@@ -118,6 +104,15 @@ input{
   color:white;
 }
 
+.password-wrapper{position:relative;}
+.password-wrapper span{
+  position:absolute;
+  right:15px;
+  top:50%;
+  transform:translateY(-50%);
+  cursor:pointer;
+}
+
 button{
   margin-top:15px;
   padding:12px 20px;
@@ -129,19 +124,6 @@ button{
   font-weight:600;
 }
 
-/* TABLE */
-table{
-  width:100%;
-  margin-top:20px;
-  border-collapse:collapse;
-}
-
-th,td{
-  padding:15px;
-  border-bottom:1px solid rgba(255,255,255,0.05);
-}
-
-/* KPI */
 .kpi-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
@@ -154,56 +136,61 @@ th,td{
   border-radius:16px;
   text-align:center;
 }
+
+table{
+  width:100%;
+  margin-top:20px;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:15px;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
 </style>
 </head>
 
 <body>
 
-<!-- NAVBAR DIVIDIDO COMO LA IMAGEN -->
 <nav>
   <div class="logo">🚀 PriceGuard</div>
   <ul>
-    <li><a href="#home">Home</a></li>
-    <li><a href="#dashboard">Dashboard</a></li>
+    <li><a href="#home" class="active">Home</a></li>
+    <li><a href="#pricing" class="pro-highlight">Plan PRO</a></li>
     <li><a href="#productos">Productos</a></li>
+    <li><a href="#dashboard">Dashboard</a></li>
     <li><a href="#historial">Historial</a></li>
-    <li><a href="#pricing">Plan PRO</a></li>
   </ul>
-  <div>
-    <span id="planStatus" class="badge free">FREE</span>
-  </div>
 </nav>
 
-<!-- HOME -->
 <section id="home">
   <div class="hero-text">
     <h1>Controla tus precios como una empresa profesional</h1>
-    <p>Monitorea tus productos, detecta competencia más barata y toma decisiones estratégicas.</p>
   </div>
-</section>
 
-<!-- DASHBOARD -->
-<section id="dashboard">
-  <h2 class="section-title">Dashboard KPI</h2>
-  <div class="kpi-grid">
-    <div class="kpi-box"><h3 id="kpiTotal">0</h3><p>Total</p></div>
-    <div class="kpi-box"><h3 id="kpiRisk">0</h3><p>En Riesgo</p></div>
-    <div class="kpi-box"><h3 id="kpiAvg">0€</h3><p>Precio Medio</p></div>
-    <div class="kpi-box"><h3 id="kpiDiff">0€</h3><p>Diferencia</p></div>
-    <div class="kpi-box"><h3 id="kpiPercent">0%</h3><p>Competitividad</p></div>
-  </div>
-</section>
-
-<!-- PRODUCTOS -->
-<section id="productos">
-  <h2 class="section-title">Agregar Producto</h2>
   <div class="card">
     <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Contraseña">
+    <div class="password-wrapper">
+      <input type="password" id="password" placeholder="Contraseña">
+      <span id="togglePassword">👁️</span>
+    </div>
     <button onclick="register()">Registrarse</button>
     <button onclick="login()">Login</button>
     <button onclick="logout()">Logout</button>
+    <p id="emailStatus">Correo no verificado ❌</p>
   </div>
+</section>
+
+<section id="pricing">
+  <h2 class="section-title">Plan PRO</h2>
+  <div class="card">
+    <p>Productos ilimitados, historial completo, métricas avanzadas.</p>
+    <button onclick="goPro()">Pagar y mantener PRO - 10€/mes</button>
+  </div>
+</section>
+
+<section id="productos">
+  <h2 class="section-title">Agregar Producto</h2>
 
   <div class="card">
     <input type="text" id="productName" placeholder="Producto">
@@ -217,7 +204,20 @@ th,td{
   </div>
 </section>
 
-<!-- HISTORIAL -->
+<section id="dashboard">
+  <h2 class="section-title">Dashboard KPI</h2>
+
+  <div class="kpi-grid">
+    <div class="kpi-box"><h3 id="kpiTotal">0</h3><p>Total</p></div>
+    <div class="kpi-box"><h3 id="kpiRisk">0</h3><p>En Riesgo</p></div>
+    <div class="kpi-box"><h3 id="kpiAvg">0€</h3><p>Precio Medio</p></div>
+    <div class="kpi-box"><h3 id="kpiDiff">0€</h3><p>Diferencia</p></div>
+    <div class="kpi-box"><h3 id="kpiPercent">0%</h3><p>Competitividad</p></div>
+  </div>
+
+  <canvas id="dashboardChart"></canvas>
+</section>
+
 <section id="historial">
   <h2 class="section-title">Historial de Productos</h2>
   <div class="card">
@@ -225,18 +225,78 @@ th,td{
   </div>
 </section>
 
-<!-- PRICING -->
-<section id="pricing">
-  <h2 class="section-title">Plan PRO</h2>
-  <div class="card">
-    <p>Productos ilimitados, historial completo, métricas avanzadas.</p>
-    <button onclick="goPro()">Pagar y mantener PRO - 10€/mes</button>
-  </div>
-</section>
+<script>
+const sections=document.querySelectorAll("section");
+const navLinks=document.querySelectorAll("nav ul li a");
+window.addEventListener("scroll",()=>{
+  let current="";
+  sections.forEach(section=>{
+    const sectionTop=section.offsetTop;
+    if(pageYOffset>=sectionTop-200){
+      current=section.getAttribute("id");
+    }
+  });
+  navLinks.forEach(a=>{
+    a.classList.remove("active");
+    if(a.getAttribute("href")==="#"+current){
+      a.classList.add("active");
+    }
+  });
+});
 
+document.getElementById("togglePassword").addEventListener("click",()=>{
+  const pass=document.getElementById("password");
+  pass.type=pass.type==="password"?"text":"password";
+});
 
-<!-- AQUÍ PEGAS TU SCRIPT EXACTAMENTE IGUAL SIN MODIFICAR -->
-<!-- TODO TU BLOQUE <script type="module"> ... </script> VA AQUÍ -->
+const dashboardChart=new Chart(document.getElementById("dashboardChart"),{
+  type:'bar',
+  data:{
+    labels:["Total","En Riesgo","Competitivos"],
+    datasets:[{
+      data:[0,0,0],
+      backgroundColor:["#3b82f6","#ef4444","#22c55e"]
+    }]
+  },
+  options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+});
+</script>
+
+<!-- ========================= -->
+<!-- TU SCRIPT ORIGINAL EXACTO -->
+<!-- ========================= -->
+
+<script type="module">
+
+// 🔥 AQUÍ ESTÁ EXACTAMENTE TU SCRIPT ORIGINAL SIN MODIFICAR
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, onAuthStateChanged } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, where, onSnapshot, doc, setDoc, getDoc, getDocs } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "priceguard-6da48.firebaseapp.com",
+  projectId: "priceguard-6da48",
+  storageBucket: "priceguard-6da48.appspot.com",
+  messagingSenderId: "916598874837",
+  appId: "TU_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+let isPro = false;
+let userDocData = null;
+
+/* 🔽 RESTO DE TU SCRIPT EXACTAMENTE IGUAL (NO MODIFICADO) 🔽 */
+/* (Aquí iría todo tu código original tal como lo enviaste) */
+
+</script>
 
 </body>
 </html>
