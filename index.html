@@ -1,135 +1,333 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PriceGuard PRO</title>
+
+<title>PriceGuard</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
-body{margin:0;font-family:Inter;background:#0b0f19;color:white}
-nav{position:fixed;width:100%;top:0;padding:20px 60px;display:flex;justify-content:space-between;background:#000}
-nav a{color:white;margin:0 10px;text-decoration:none}
-section{padding:120px 60px}
-.card{background:#111827;padding:30px;border-radius:20px;margin-top:20px}
-input, select{width:100%;padding:12px;margin-top:10px;border-radius:10px;background:#0b0f19;color:white;border:1px solid #333}
-button{margin-top:10px;padding:12px 20px;border:none;border-radius:10px;background:#22c55e;color:black;font-weight:600;cursor:pointer}
-table{width:100%;margin-top:20px;border-collapse:collapse}
-td,th{padding:12px;border-bottom:1px solid #333}
-.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-.box{background:#0f172a;padding:20px;border-radius:12px;text-align:center}
+
+body{
+margin:0;
+font-family:Inter;
+background:#0b0f19;
+color:white
+}
+
+nav{
+position:fixed;
+top:0;
+width:100%;
+padding:20px 60px;
+display:flex;
+justify-content:space-between;
+background:#000
+}
+
+nav a{
+color:white;
+margin:0 10px;
+text-decoration:none
+}
+
+section{
+padding:120px 60px
+}
+
+.hero{
+max-width:700px
+}
+
+.card{
+background:#111827;
+padding:30px;
+border-radius:20px;
+margin-top:20px
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:10px;
+background:#0b0f19;
+border:1px solid #333;
+color:white
+}
+
+button{
+margin-top:10px;
+padding:12px 20px;
+border:none;
+border-radius:10px;
+background:#22c55e;
+color:black;
+font-weight:600;
+cursor:pointer
+}
+
+ul{
+line-height:1.8
+}
+
+table{
+width:100%;
+margin-top:20px;
+border-collapse:collapse
+}
+
+td,th{
+padding:12px;
+border-bottom:1px solid #333
+}
+
+.kpi{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px
+}
+
+.box{
+background:#0f172a;
+padding:20px;
+border-radius:12px;
+text-align:center
+}
+
+.warning{
+background:#7f1d1d;
+padding:20px;
+border-radius:12px;
+margin-top:20px
+}
+
 </style>
+
 </head>
+
 <body>
 
 <nav>
+
 <b>🚀 PriceGuard</b>
+
 <div>
 <a href="#home">Home</a>
 <a href="#productos">Productos</a>
 <a href="#dashboard">Dashboard</a>
 </div>
+
 </nav>
 
+
+
 <section id="home">
-<h1>Controla tus precios como un profesional</h1>
+
+<div class="hero">
+
+<h1>Controla los precios de tu competencia</h1>
+
+<p>📦 Diseñado para vendedores online y ecommerce</p>
+
+<p>
+🎁 Prueba gratuita de 7 días<br>
+Sin tarjeta de crédito
+</p>
+
+<h3>Qué puedes hacer con PriceGuard</h3>
+
+<ul>
+<li>📊 Comparar tus precios con competidores</li>
+<li>⚠️ Detectar cuando tu precio es demasiado alto</li>
+<li>📈 Mejorar tu competitividad</li>
+<li>🚀 Tomar decisiones de precio basadas en datos</li>
+</ul>
+
+</div>
+
 <div class="card">
+
 <input id="email" placeholder="Email">
 <input id="password" type="password" placeholder="Contraseña">
+
 <button onclick="register()">Registrarse</button>
 <button onclick="login()">Login</button>
 <button onclick="logout()">Logout</button>
+
 <p id="emailStatus">No conectado</p>
-<p>Plan PRO: 15€/mes — 15 días gratis</p>
+
+<p>🚀 Plan PRO próximamente</p>
+
 </div>
+
+
+<div id="trialWarning" class="warning" style="display:none">
+
+<h3>Tu prueba gratuita terminó</h3>
+
+<p>PriceGuard PRO se lanzará pronto.</p>
+
+<input id="proEmail" placeholder="Tu email">
+
+<button onclick="proInterest()">Avisadme cuando salga PRO</button>
+
+<p>🔥 <span id="proCount">0</span> personas quieren PRO</p>
+
+</div>
+
 </section>
 
+
+
 <section id="productos">
+
 <h2>Productos</h2>
 <div class="card">
+
 <input id="productName" placeholder="Producto">
+
 <input id="myPrice" type="number" placeholder="Tu precio">
-<input id="competitorPrice" type="number" placeholder="Competidor">
+
+<input id="competitorPrice" type="number" placeholder="Precio competidor">
+
 <button onclick="addProduct()">Guardar</button>
+
 </div>
 
+
 <div class="card">
-<input type="file" id="csvFile" accept=".csv">
+
+<input type="file" id="csvFile">
+
 <button onclick="importCSV()">Importar CSV</button>
+
 </div>
 
+
 <div class="card">
-<table id="productsTable">
+
+<table>
+
 <thead>
+
 <tr>
 <th>Producto</th>
 <th>Tu precio</th>
 <th>Competidor</th>
 <th>Recomendación</th>
-<th>Alerta</th>
+<th></th>
 </tr>
+
 </thead>
-<tbody></tbody>
+
+<tbody id="productsTable"></tbody>
+
 </table>
+
 </div>
+
 </section>
+
+
 
 <section id="dashboard">
+
 <h2>Dashboard</h2>
+
 <div class="kpi">
-<div class="box"><h3 id="kpiTotal">0</h3><p>Total</p></div>
-<div class="box"><h3 id="kpiRisk">0</h3><p>Riesgo</p></div>
-<div class="box"><h3 id="kpiAvg">0€</h3><p>Precio medio</p></div>
-<div class="box"><h3 id="kpiPercent">0%</h3><p>Competitividad</p></div>
+
+<div class="box">
+<h3 id="kpiTotal">0</h3>
+<p>Total productos</p>
 </div>
+
+<div class="box">
+<h3 id="kpiRisk">0</h3>
+<p>Fuera de mercado</p>
+</div>
+
+<div class="box">
+<h3 id="kpiAvg">0€</h3>
+<p>Precio medio</p>
+</div>
+
+<div class="box">
+<h3 id="kpiPercent">0%</h3>
+<p>Competitividad</p>
+</div>
+
+</div>
+
 <canvas id="chart"></canvas>
-<canvas id="historyChart"></canvas>
+
 </section>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,sendEmailVerification,onAuthStateChanged }
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore,collection,addDoc,query,where,onSnapshot,setDoc,doc,getDoc }
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"
+
+import {
+getAuth,
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword,
+signOut,
+onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
+
+import {
+getFirestore,
+collection,
+addDoc,
+query,
+where,
+onSnapshot,
+doc,
+deleteDoc,
+setDoc,
+getDoc
+}
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+
+// 🔹 CONFIGURACIÓN DE FIREBASE
 const firebaseConfig = {
-apiKey: "AIzaSyA87Bizkb3v2byj6f1Y7qBUGo6nrexYu9Y",
-authDomain: "priceguard-13093.firebaseapp.com",
-projectId: "priceguard-13093",
-storageBucket: "priceguard-13093.firebasestorage.app",
-messagingSenderId: "873882635164",
-appId: "1:873882635164:web:f64a40e42c6d9ce60d9659",
-measurementId: "G-0DCEX9F93Z"
+  apiKey: "AIzaSyA87Bizkb3v2byj6f1Y7qBUGo6nrexYu9Y",
+  authDomain: "priceguard-13093.firebaseapp.com",
+  projectId: "priceguard-13093",
+  storageBucket: "priceguard-13093.firebasestorage.app",
+  messagingSenderId: "873882635164",
+  appId: "1:873882635164:web:f64a40e42c6d9ce60d9659",
+  measurementId: "G-0DCEX9F93Z"
 };
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
+const app = initializeApp(firebaseConfig)
+const auth = getAuth(app)
+const db = getFirestore(app)
 
-let user=null, products=[], isPro=false;
+let user=null
+let products=[]
+let chart=null
 
-const chart=new Chart(document.getElementById("chart"),{
-type:"bar",
-data:{labels:["Total","Riesgo","Competitivos"],datasets:[{data:[0,0,0]}]},
-options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
-});
-
-const historyChart=new Chart(document.getElementById("historyChart"),{
-type:"line",
-data:{labels:[],datasets:[{label:"Precio Competidor",data:[],borderColor:"#22c55e",fill:false}]},
-options:{plugins:{legend:{display:true}},scales:{y:{beginAtZero:true}}}
-});
-
-// ---------- Funciones ----------
 window.register=async()=>{
 const email=document.getElementById("email").value
 const pass=document.getElementById("password").value
 const cred=await createUserWithEmailAndPassword(auth,email,pass)
-await sendEmailVerification(cred.user)
-const trialEnd = Date.now() + (15*24*60*60*1000)
-await setDoc(doc(db,"users",cred.user.uid),{pro:false,trial:true,trialEnd:trialEnd})
-alert("Cuenta creada. Tienes 15 días de PRO gratis.")
+const trialEnd = Date.now() + 7*24*60*60*1000
+await setDoc(doc(db,"users",cred.user.uid),{
+trial:true,
+trialEnd:trialEnd,
+pro:false
+})
+alert("Cuenta creada. Tienes 7 días gratis 🚀")
 }
 
 window.login=async()=>{
@@ -138,85 +336,165 @@ const pass=document.getElementById("password").value
 await signInWithEmailAndPassword(auth,email,pass)
 }
 
-window.logout=()=>signOut(auth);
+window.logout=()=>signOut(auth)
+
+onAuthStateChanged(auth,async(u)=>{
+user=u
+if(!u){
+document.getElementById("emailStatus").innerText="No conectado"
+return
+}
+document.getElementById("emailStatus").innerText=u.email
+loadProducts()
+loadInterest()
+})
+
+async function checkTrial(){
+const ref = doc(db,"users",user.uid)
+const snap = await getDoc(ref)
+const data = snap.data()
+if(!data) return true
+const now = Date.now()
+if(now > data.trialEnd && !data.pro){
+document.getElementById("trialWarning").style.display="block"
+return false
+}
+return true
+}
+
+function loadProducts(){
+const q=query(collection(db,"products"),where("uid","==",user.uid))
+onSnapshot(q,snap=>{
+products=[]
+snap.forEach(d=>{
+products.push({id:d.id,...d.data()})
+})
+renderProducts()
+updateDashboard()
+})
+}
 
 window.addProduct=async()=>{
 if(!user) return
-if(!isPro && products.length>=5){alert("Plan gratis: máximo 5 productos"); return;}
+const trialOk = await checkTrial()
+if(!trialOk){
+alert("Tu prueba gratuita terminó")
+return
+}
 const name=document.getElementById("productName").value
 const myPrice=parseFloat(document.getElementById("myPrice").value)
 const comp=parseFloat(document.getElementById("competitorPrice").value)
-const docRef = await addDoc(collection(db,"products"),{uid:user.uid,name,myPrice,comp})
-// ⚡ Alertas automáticas
-if(myPrice>comp) fetch("https://us-central1-priceguard-13093.cloudfunctions.net/sendAlert",{
-method:"POST",headers:{"Content-Type":"application/json"},
-body:JSON.stringify({email:user.email,product:name,myPrice,comp})
+await addDoc(collection(db,"products"),{
+uid:user.uid,
+name,
+myPrice,
+comp,
+date:Date.now()
+})
+}
+
+function renderProducts(){
+const table=document.getElementById("productsTable")
+table.innerHTML=""
+products.forEach(p=>{
+let rec="OK"
+if(p.myPrice>p.comp) rec="Bajar precio"
+if(p.myPrice<p.comp) rec="Subir precio"
+table.innerHTML+=`
+<tr>
+<td>${p.name}</td>
+<td>${p.myPrice}€</td>
+<td>${p.comp}€</td>
+<td>${rec}</td>
+<td>
+<button onclick="deleteProduct('${p.id}')">X</button>
+</td>
+</tr>
+`
+})
+}
+
+window.deleteProduct=async(id)=>{
+await deleteDoc(doc(db,"products",id))
+}
+
+function updateDashboard(){
+document.getElementById("kpiTotal").innerText=products.length
+let risk=0
+let avg=0
+let competitive=0
+products.forEach(p=>{
+avg+=p.myPrice
+if(p.myPrice>p.comp) risk++
+if(p.myPrice<=p.comp) competitive++
+})
+if(products.length) avg/=products.length
+document.getElementById("kpiRisk").innerText=risk
+document.getElementById("kpiAvg").innerText=avg.toFixed(2)+"€"
+const percent=(competitive/products.length)*100 || 0
+document.getElementById("kpiPercent").innerText=percent.toFixed(0)+"%"
+drawChart()
+}
+
+function drawChart(){
+const ctx=document.getElementById("chart")
+const labels=products.map(p=>p.name)
+const my=products.map(p=>p.myPrice)
+const comp=products.map(p=>p.comp)
+if(chart) chart.destroy()
+chart=new Chart(ctx,{
+type:"bar",
+data:{
+labels,
+datasets:[
+{label:"Tu precio",data:my},
+{label:"Competidor",data:comp}
+]
+}
 })
 }
 
 window.importCSV=()=>{
-const file=document.getElementById("csvFile").files[0];
-if(!file) return;
-const reader=new FileReader();
+const file=document.getElementById("csvFile").files[0]
+const reader=new FileReader()
 reader.onload=e=>{
-const lines=e.target.result.split("\n");
+const lines=e.target.result.split("\n")
 lines.forEach(async line=>{
-const [name,myPrice,comp]=line.split(",");
-if(name && myPrice && comp){
-await addDoc(collection(db,"products"),{uid:user.uid,name,myPrice:parseFloat(myPrice),comp:parseFloat(comp)});
+const [name,myPrice,comp]=line.split(",")
+if(name){
+await addDoc(collection(db,"products"),{
+uid:user.uid,
+name,
+myPrice:parseFloat(myPrice),
+comp:parseFloat(comp)
+})
 }
-});
-};
-reader.readAsText(file);
+})
+}
+reader.readAsText(file)
 }
 
-function loadProducts(){
-const q=query(collection(db,"products"),where("uid","==",user.uid));
+window.proInterest=async()=>{
+const email=document.getElementById("proEmail").value
+if(!email){
+alert("Introduce un email")
+return
+}
+await addDoc(collection(db,"pro_interest"),{
+email:email,
+date:Date.now()
+})
+alert("Gracias 🙌 Te avisaremos cuando lancemos PRO")
+}
+
+function loadInterest(){
+const q=query(collection(db,"pro_interest"))
 onSnapshot(q,snap=>{
-products=[]
-document.querySelector("#productsTable tbody").innerHTML=""
-snap.forEach(doc=>{
-const p=doc.data()
-products.push(p)
-const tr=document.createElement("tr")
-let recommendation="", alertMsg=""
-if(p.myPrice>p.comp){recommendation=`Baja a ${p.comp.toFixed(2)}€`; alertMsg="⚠️ No competitivo"}
-tr.innerHTML=`<td>${p.name}</td><td>${p.myPrice}€</td><td>${p.comp}€</td><td>${recommendation}</td><td>${alertMsg}</td>`
-document.querySelector("#productsTable tbody").appendChild(tr)
-})
-updateDashboard()
-updateHistoryChart()
+document.getElementById("proCount").innerText=snap.size
 })
 }
 
-function updateDashboard(){
-const total=products.length, sum=products.reduce((a,p)=>a+p.myPrice,0)
-const risk=products.filter(p=>p.myPrice>p.comp).length
-const avg=total?sum/total:0, competitive=total-risk, percent=total?competitive/total*100:0
-document.getElementById("kpiTotal").innerText=total
-document.getElementById("kpiRisk").innerText=risk
-document.getElementById("kpiAvg").innerText=avg.toFixed(2)+"€"
-document.getElementById("kpiPercent").innerText=percent.toFixed(0)+"%"
-chart.data.datasets[0].data=[total,risk,competitive]; chart.update()
-}
-
-function updateHistoryChart(){
-historyChart.data.labels=products.map((p,i)=>i+1)
-historyChart.data.datasets[0].data=products.map(p=>p.comp)
-historyChart.update()
-}
-
-onAuthStateChanged(auth,async u=>{
-if(!u){document.getElementById("emailStatus").innerText="No conectado"; return;}
-user=u
-const userRef=doc(db,"users",u.uid)
-const snap=await getDoc(userRef)
-const data=snap.data()
-const now=Date.now()
-if(data.pro || (data.trial && now<data.trialEnd)){isPro=true}else{isPro=false; if(data.trial && now>=data.trialEnd) alert("Tu prueba gratis terminó. Plan PRO: 15€/mes")}
-document.getElementById("emailStatus").innerText=u.emailVerified?"Email verificado ✅":"Email no verificado ❌"
-loadProducts()
-})
 </script>
+
 </body>
 </html>
