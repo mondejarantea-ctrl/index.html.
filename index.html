@@ -22,6 +22,7 @@ td,th{padding:12px;border-bottom:1px solid #333}
 .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
 .box{background:#0f172a;padding:20px;border-radius:12px;text-align:center}
 .warning{background:#7f1d1d;padding:20px;border-radius:12px;margin-top:20px}
+#chart{width:100%;height:400px;} /* Altura visible */
 </style>
 </head>
 
@@ -173,6 +174,7 @@ async function checkTrial(){
 
 // Productos
 function loadProducts(){
+  if(!user){ drawChart(); return } // dibuja con datos de prueba si no hay usuario
   const q=query(collection(db,"products"),where("uid","==",user.uid))
   onSnapshot(q, snap=>{
     products=[]
@@ -217,12 +219,18 @@ function updateDashboard(){
   document.getElementById("kpiPercent").innerText=((competitive/products.length)*100||0).toFixed(0)+"%"
 }
 
-// Gráfica profesional con degradado, tooltip y animación
+// Gráfica profesional con datos de prueba
 function drawChart(){
   const ctx=document.getElementById("chart").getContext('2d')
-  const labels=products.map(p=>p.name)
-  const my=products.map(p=>p.myPrice)
-  const comp=products.map(p=>p.comp)
+  // Si no hay productos, usar datos de ejemplo
+  const dataProducts = products.length ? products : [
+    {name:'Producto A', myPrice:50, comp:60},
+    {name:'Producto B', myPrice:30, comp:25},
+    {name:'Producto C', myPrice:70, comp:65}
+  ]
+  const labels=dataProducts.map(p=>p.name)
+  const my=dataProducts.map(p=>p.myPrice)
+  const comp=dataProducts.map(p=>p.comp)
 
   if(chart) chart.destroy()
 
@@ -296,6 +304,9 @@ function loadInterest(){
   const q=query(collection(db,"pro_interest"))
   onSnapshot(q,snap=>{document.getElementById("proCount").innerText=snap.size})
 }
+
+// Dibujar la gráfica al cargar la web aunque no haya usuario
+drawChart()
 </script>
 </body>
 </html>
