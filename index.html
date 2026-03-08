@@ -1,420 +1,271 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>PriceGuard</title>
+<title>PriceScout</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
 
 <style>
-
-body{
-margin:0;
-font-family:Inter;
-background:white;
-color:#111;
-}
-
-nav{
-position:fixed;
-top:0;
-width:100%;
-padding:20px 80px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-background:white;
-border-bottom:1px solid #eee;
-z-index:100;
-}
-
-nav a{
-text-decoration:none;
-color:#333;
-margin:0 15px;
-font-weight:500;
-}
-
-.logo{
-font-weight:700;
-font-size:20px;
-}
-
-.hero{
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:160px 80px 120px 80px;
-}
-
-.hero-text{
-max-width:520px;
-}
-
-.hero-text h1{
-font-size:48px;
-line-height:1.1;
-margin-bottom:20px;
-}
-
-.hero-text p{
-font-size:18px;
-color:#555;
-}
-
-.cta{
-margin-top:30px;
-}
-
-.btn{
-padding:14px 28px;
-border-radius:8px;
-border:none;
-cursor:pointer;
-font-weight:600;
-}
-
-.btn-primary{
-background:black;
-color:white;
-}
-
-.btn-outline{
-border:1px solid #ccc;
-background:white;
-margin-left:10px;
-}
-
-.hero-img{
-width:600px;
-border-radius:10px;
-box-shadow:0 20px 60px rgba(0,0,0,0.2);
-animation:float 6s ease-in-out infinite;
-}
-
-@keyframes float{
-0%{transform:translateY(0)}
-50%{transform:translateY(-12px)}
-100%{transform:translateY(0)}
-}
-
-section{
-padding:100px 80px;
-}
-
-.card{
-background:#fafafa;
-padding:30px;
-border-radius:12px;
-margin-top:20px;
-border:1px solid #eee;
-}
-
-input{
-width:100%;
-padding:12px;
-margin-top:10px;
-border-radius:8px;
-border:1px solid #ddd;
-}
-
-table{
-width:100%;
-margin-top:20px;
-border-collapse:collapse;
-}
-
-td,th{
-padding:12px;
-border-bottom:1px solid #eee;
-}
-
-.kpi{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:20px;
-}
-
-.box{
-background:#fafafa;
-padding:20px;
-border-radius:10px;
-border:1px solid #eee;
-text-align:center;
-}
-
-.price-grid{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:40px;
-margin-top:60px;
-}
-
-.price-card{
-border:1px solid #eee;
-padding:40px;
-border-radius:12px;
-text-align:center;
-background:white;
-}
-
-.price-card h1{
-font-size:42px;
-margin:10px 0;
-}
-
-.price-card ul{
-list-style:none;
-padding:0;
-line-height:2;
-}
-
-.popular{
-border:2px solid black;
-transform:scale(1.05);
-}
-
-.warning{
-background:#fee2e2;
-padding:20px;
-border-radius:10px;
-margin-top:20px;
-}
-
+/* --- Estilo base --- */
+body{margin:0;font-family:Inter;background:white;color:#111;}
+nav{position:fixed;top:0;width:100%;display:flex;justify-content:space-between;align-items:center;padding:20px 80px;background:white;border-bottom:1px solid #eee;z-index:100;}
+nav a{margin-left:20px;text-decoration:none;color:#444;cursor:pointer;}
+.hero{display:flex;justify-content:space-between;align-items:center;padding:160px 80px 100px;}
+.hero h1{font-size:48px;}
+.btn{padding:14px 25px;border:none;border-radius:8px;cursor:pointer;font-weight:600;}
+.btn-primary{background:black;color:white;}
+.btn-outline{border:1px solid #ccc;background:white;}
+section{padding:80px;}
+.card{background:#fafafa;padding:30px;border-radius:10px;border:1px solid #eee;margin-top:20px;}
+input{width:100%;padding:12px;margin-top:10px;border-radius:8px;border:1px solid #ddd;}
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:40px;}
+.price-card{border:1px solid #eee;padding:40px;border-radius:10px;text-align:center;transition:0.3s;}
+.popular{border:2px solid black;}
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:30px;}
+.box{padding:20px;border:1px solid #eee;border-radius:10px;text-align:center;background:#fafafa;}
+table{width:100%;margin-top:20px;border-collapse:collapse;}
+td,th{padding:12px;border-bottom:1px solid #eee;}
+.modal-bg{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;}
+.modal{background:white;padding:30px;border-radius:12px;text-align:center;}
 </style>
-
 </head>
-
 <body>
 
 <nav>
-
-<div class="logo">PriceGuard.ai</div>
-
+<b>PriceScout</b>
 <div>
 <a href="#home">Home</a>
 <a href="#productos">Productos</a>
 <a href="#dashboard">Dashboard</a>
-<a href="#pricing">Pricing</a>
+<a href="#pricing">Planes</a>
 </div>
-
 </nav>
 
-<section id="home" class="hero">
-
-<div class="hero-text">
-
-<h1>Catch pricing errors before they cost you revenue</h1>
-
-<p>
-Monitor your ecommerce pricing and compare with competitors automatically.
-</p>
-
-<div class="cta">
-<button class="btn btn-primary">Sign up</button>
-<button class="btn btn-outline">Watch demo</button>
+<section class="hero" id="home">
+<div>
+<h1>Track competitor prices automatically</h1>
+<p>Monitor your ecommerce prices and stay competitive.</p>
+<button class="btn btn-primary" onclick="scrollToRegister()">Sign Up</button>
 </div>
-
-</div>
-
-<img class="hero-img" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71">
-
+<img width="500" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71">
 </section>
 
-<section>
-
-<h2 style="text-align:center;font-size:36px">
-Market leaders in pricing error detection
-</h2>
-
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:60px">
-
-<div>
-<h3>24/7 Monitoring</h3>
-<p>Detect pricing errors instantly.</p>
+<section id="register">
+<h2>Crear cuenta</h2>
+<div class="card">
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Contraseña">
+<button class="btn btn-primary" onclick="register()">Registrarse</button>
+<p id="userStatus">No conectado</p>
 </div>
-
-<div>
-<h3>Competitor Tracking</h3>
-<p>Compare your price with competitors.</p>
-</div>
-
-<div>
-<h3>Revenue Protection</h3>
-<p>Prevent costly pricing mistakes.</p>
-</div>
-
-</div>
-
 </section>
 
 <section id="productos">
-
 <h2>Productos</h2>
-
 <div class="card">
-
 <input id="productName" placeholder="Producto">
-
 <input id="myPrice" type="number" placeholder="Tu precio">
-
 <input id="competitorPrice" type="number" placeholder="Precio competidor">
-
 <button class="btn btn-primary" onclick="addProduct()">Guardar</button>
-
 </div>
 
 <div class="card">
-
 <table>
-
 <thead>
-
 <tr>
-<th>Producto</th>
-<th>Tu precio</th>
-<th>Competidor</th>
-<th>Recomendación</th>
-<th></th>
+<th>Producto</th><th>Tu precio</th><th>Competidor</th><th>Recomendación</th>
 </tr>
-
 </thead>
-
 <tbody id="productsTable"></tbody>
-
 </table>
-
 </div>
-
 </section>
 
 <section id="dashboard">
-
 <h2>Dashboard</h2>
-
 <div class="kpi">
-
-<div class="box"><h3 id="kpiTotal">0</h3><p>Total productos</p></div>
-
-<div class="box"><h3 id="kpiRisk">0</h3><p>Fuera de mercado</p></div>
-
+<div class="box"><h3 id="kpiTotal">0</h3><p>Productos</p></div>
+<div class="box"><h3 id="kpiRisk">0</h3><p>Más caro</p></div>
 <div class="box"><h3 id="kpiAvg">0€</h3><p>Precio medio</p></div>
-
-<div class="box"><h3 id="kpiPercent">0%</h3><p>Competitividad</p></div>
-
+<div class="box"><h3 id="kpiPercent">0%</h3><p>Competitivo</p></div>
 </div>
-
-<canvas id="chart"></canvas>
-
+<canvas id="chart" style="height:400px;"></canvas>
 </section>
 
 <section id="pricing">
-
-<h2 style="text-align:center;font-size:40px">
-Pricing that pays for itself
-</h2>
-
+<h2 style="text-align:center;font-size:36px">Planes</h2>
 <div class="price-grid">
-
 <div class="price-card">
-
-<h3>Starter</h3>
-
-<h1>€135</h1>
-
-<p>/month</p>
-
-<ul>
-<li>200 SKUs monitored</li>
-<li>Email alerts</li>
-<li>30 day history</li>
-</ul>
-
-<button class="btn btn-primary">Sign up</button>
-
+<h3>Starter</h3><h1>€10</h1><p>20 días de prueba gratis</p>
+<ul><li>200 productos</li><li>alertas de precio</li><li>historial 30 días</li></ul>
+<button class="btn btn-primary" onclick="showComingSoon()">Elegir plan</button>
 </div>
-
 <div class="price-card popular">
-
-<h3>Pro</h3>
-
-<h1>€259</h1>
-
-<p>/month</p>
-
-<ul>
-<li>10,000 SKUs</li>
-<li>Advanced rules</li>
-<li>Multi-store dashboard</li>
-<li>Priority support</li>
-</ul>
-
-<button class="btn btn-primary">Sign up</button>
-
+<h3>Pro</h3><h1>€20</h1><p>20 días de prueba gratis</p>
+<ul><li>10.000 productos</li><li>reglas avanzadas</li><li>soporte prioritario</li></ul>
+<button class="btn btn-primary" onclick="showComingSoon()">Elegir plan</button>
 </div>
-
 <div class="price-card">
-
-<h3>Enterprise</h3>
-
-<h1>Custom</h1>
-
-<ul>
-<li>Unlimited SKUs</li>
-<li>Custom integrations</li>
-<li>Dedicated manager</li>
-</ul>
-
-<button class="btn btn-outline">Contact</button>
-
+<h3>Enterprise</h3><h1>Custom</h1>
+<button class="btn btn-outline" onclick="showComingSoon()">Contact</button>
 </div>
-
 </div>
-
 </section>
 
-<script type="module">
+<!-- Modal Próximamente -->
+<div class="modal-bg" id="modalBg">
+<div class="modal">
+<p>Próximamente 🚀</p>
+<button onclick="closeModal()">Cerrar</button>
+</div>
+</div>
 
+<script type="module">
+// Firebase config
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
-import { getFirestore, collection, addDoc, query, where, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
+import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
 
 const firebaseConfig = {
-
-apiKey: "AIzaSyA87Bizkb3v2byj6f1Y7qBUGo6nrexYu9Y",
-authDomain: "priceguard-13093.firebaseapp.com",
-projectId: "priceguard-13093",
-
-}
+  apiKey: "AIzaSyA87Bizkb3v2byj6f1Y7qBUGo6nrexYu9Y",
+  authDomain: "priceguard-13093.firebaseapp.com",
+  projectId: "priceguard-13093",
+};
 
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const db = getFirestore(app)
 
-let user=null
 let products=[]
+let trialEnd=null
 
-window.addProduct=async()=>{
+// Seguridad básica
+function validateEmail(email){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) }
 
-const name=document.getElementById("productName").value
-const myPrice=parseFloat(document.getElementById("myPrice").value)
-const comp=parseFloat(document.getElementById("competitorPrice").value)
+// Registro
+function register(){
+  const email=document.getElementById("email").value.trim()
+  const pass=document.getElementById("password").value
+  if(!email||!pass){alert("Rellena email y contraseña"); return;}
+  if(!validateEmail(email)){alert("Email inválido"); return;}
+  if(pass.length<6){alert("Mínimo 6 caracteres"); return;}
 
-if(!name||!myPrice||!comp)return
-
-await addDoc(collection(db,"products"),{
-name,
-myPrice,
-comp
-})
-
+  createUserWithEmailAndPassword(auth,email,pass)
+  .then(userCred=>{
+    trialEnd=Date.now()+20*24*60*60*1000
+    alert("Cuenta creada ✅. 20 días de prueba gratis enviada a tu email: "+email)
+    sendTrialEmail(email)
+  })
+  .catch(err=>alert("Error: "+err.message))
 }
 
-</script>
+// Función de prueba email
+function sendTrialEmail(email){
+  console.log("Email de prueba enviado a:",email)
+  // Aquí puedes integrar un servicio real como SendGrid
+}
 
+// Guardar producto en Firestore
+function addProduct(){
+  if(trialEnd && Date.now()>trialEnd){alert("Tu prueba gratis terminó"); return;}
+  const name=document.getElementById("productName").value
+  const myPrice=parseFloat(document.getElementById("myPrice").value)
+  const comp=parseFloat(document.getElementById("competitorPrice").value)
+  if(!name||isNaN(myPrice)||isNaN(comp)){alert("Rellena todos los campos"); return;}
+
+  const prod={name,myPrice,comp}
+  products.push(prod)
+
+  // Guardar en Firestore
+  addDoc(collection(db,"products"),prod)
+  .then(()=>console.log("Producto guardado en DB"))
+
+  renderProducts()
+  updateDashboard()
+  drawChart()
+}
+
+// Render tabla
+function renderProducts(){
+  const table=document.getElementById("productsTable")
+  table.innerHTML=""
+  products.forEach(p=>{
+    let rec="OK"
+    if(p.myPrice>p.comp) rec="Bajar precio"
+    if(p.myPrice<p.comp) rec="Subir precio"
+    table.innerHTML+=`<tr><td>${p.name}</td><td>${p.myPrice}€</td><td>${p.comp}€</td><td>${rec}</td></tr>`
+  })
+}
+
+// Dashboard
+function updateDashboard(){
+  document.getElementById("kpiTotal").innerText=products.length
+  let risk=0, avg=0, competitive=0
+  products.forEach(p=>{
+    avg+=p.myPrice
+    if(p.myPrice>p.comp) risk++
+    if(p.myPrice<=p.comp) competitive++
+  })
+  if(products.length) avg/=products.length
+  document.getElementById("kpiRisk").innerText=risk
+  document.getElementById("kpiAvg").innerText=avg.toFixed(2)+"€"
+  document.getElementById("kpiPercent").innerText=((competitive/products.length)*100||0).toFixed(0)+"%"
+}
+
+// Gráfica profesional
+let chart=null
+function drawChart(){
+  const ctx=document.getElementById("chart").getContext('2d')
+  const dataProducts=products.length?products:[
+    {name:'Producto A',myPrice:50,comp:60},
+    {name:'Producto B',myPrice:30,comp:25},
+    {name:'Producto C',myPrice:70,comp:65}
+  ]
+  const labels=dataProducts.map(p=>p.name)
+  const my=dataProducts.map(p=>p.myPrice)
+  const comp=dataProducts.map(p=>p.comp)
+
+  if(chart) chart.destroy()
+
+  const gradientGreen=ctx.createLinearGradient(0,0,0,400)
+  gradientGreen.addColorStop(0,'rgba(34,197,94,0.8)')
+  gradientGreen.addColorStop(1,'rgba(34,197,94,0.3)')
+
+  const gradientRed=ctx.createLinearGradient(0,0,0,400)
+  gradientRed.addColorStop(0,'rgba(239,68,68,0.8)')
+  gradientRed.addColorStop(1,'rgba(239,68,68,0.3)')
+
+  chart=new Chart(ctx,{
+    type:'bar',
+    data:{labels,datasets:[
+      {label:'Tu precio',data:my,backgroundColor:gradientGreen,borderColor:'rgba(34,197,94,1)',borderWidth:1},
+      {label:'Competidor',data:comp,backgroundColor:gradientRed,borderColor:'rgba(239,68,68,1)',borderWidth:1}
+    ]},
+    options:{responsive:true,
+      plugins:{legend:{position:'top',labels:{color:'black'}},title:{display:true,text:'Comparativa de precios',color:'black'},tooltip:{callbacks:{label:function(ctx){const val=ctx.raw; const idx=ctx.dataIndex; const diff=my[idx]-comp[idx]; const sign=diff>0?'↑':'↓'; return ctx.dataset.label+": "+val+"€ ("+sign+Math.abs(diff)+"€ respecto competidor)"}}}},
+      scales:{x:{ticks:{color:'black'},grid:{color:'rgba(0,0,0,0.1)'}},y:{ticks:{color:'black'},grid:{color:'rgba(0,0,0,0.1)'}}}
+    }
+  })
+}
+
+// Modal Próximamente
+function showComingSoon(){
+  document.getElementById("modalBg").style.display="flex"
+}
+function closeModal(){document.getElementById("modalBg").style.display="none"}
+
+// Scroll registro
+function scrollToRegister(){document.getElementById("register").scrollIntoView({behavior:'smooth'})}
+
+// Inicial
+drawChart()
+
+</script>
 </body>
 </html>
