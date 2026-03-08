@@ -4,86 +4,276 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>PriceGuard</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
-body{margin:0;font-family:Inter;background:#0b0f19;color:white}
-nav{position:fixed;top:0;width:100%;padding:20px 60px;display:flex;justify-content:space-between;background:#000}
-nav a{color:white;margin:0 10px;text-decoration:none}
-section{padding:120px 60px}
-.hero{max-width:700px}
-.card{background:#111827;padding:30px;border-radius:20px;margin-top:20px}
-input{width:100%;padding:12px;margin-top:10px;border-radius:10px;background:#0b0f19;border:1px solid #333;color:white}
-button{margin-top:10px;padding:12px 20px;border:none;border-radius:10px;background:#22c55e;color:black;font-weight:600;cursor:pointer}
-ul{line-height:1.8}
-table{width:100%;margin-top:20px;border-collapse:collapse}
-td,th{padding:12px;border-bottom:1px solid #333}
-.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-.box{background:#0f172a;padding:20px;border-radius:12px;text-align:center}
-.warning{background:#7f1d1d;padding:20px;border-radius:12px;margin-top:20px}
-#chart{width:100%;height:400px;} /* Altura visible */
+
+body{
+margin:0;
+font-family:Inter;
+background:white;
+color:#111;
+}
+
+nav{
+position:fixed;
+top:0;
+width:100%;
+padding:20px 80px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:white;
+border-bottom:1px solid #eee;
+z-index:100;
+}
+
+nav a{
+text-decoration:none;
+color:#333;
+margin:0 15px;
+font-weight:500;
+}
+
+.logo{
+font-weight:700;
+font-size:20px;
+}
+
+.hero{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:160px 80px 120px 80px;
+}
+
+.hero-text{
+max-width:520px;
+}
+
+.hero-text h1{
+font-size:48px;
+line-height:1.1;
+margin-bottom:20px;
+}
+
+.hero-text p{
+font-size:18px;
+color:#555;
+}
+
+.cta{
+margin-top:30px;
+}
+
+.btn{
+padding:14px 28px;
+border-radius:8px;
+border:none;
+cursor:pointer;
+font-weight:600;
+}
+
+.btn-primary{
+background:black;
+color:white;
+}
+
+.btn-outline{
+border:1px solid #ccc;
+background:white;
+margin-left:10px;
+}
+
+.hero-img{
+width:600px;
+border-radius:10px;
+box-shadow:0 20px 60px rgba(0,0,0,0.2);
+animation:float 6s ease-in-out infinite;
+}
+
+@keyframes float{
+0%{transform:translateY(0)}
+50%{transform:translateY(-12px)}
+100%{transform:translateY(0)}
+}
+
+section{
+padding:100px 80px;
+}
+
+.card{
+background:#fafafa;
+padding:30px;
+border-radius:12px;
+margin-top:20px;
+border:1px solid #eee;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:8px;
+border:1px solid #ddd;
+}
+
+table{
+width:100%;
+margin-top:20px;
+border-collapse:collapse;
+}
+
+td,th{
+padding:12px;
+border-bottom:1px solid #eee;
+}
+
+.kpi{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px;
+}
+
+.box{
+background:#fafafa;
+padding:20px;
+border-radius:10px;
+border:1px solid #eee;
+text-align:center;
+}
+
+.price-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:40px;
+margin-top:60px;
+}
+
+.price-card{
+border:1px solid #eee;
+padding:40px;
+border-radius:12px;
+text-align:center;
+background:white;
+}
+
+.price-card h1{
+font-size:42px;
+margin:10px 0;
+}
+
+.price-card ul{
+list-style:none;
+padding:0;
+line-height:2;
+}
+
+.popular{
+border:2px solid black;
+transform:scale(1.05);
+}
+
+.warning{
+background:#fee2e2;
+padding:20px;
+border-radius:10px;
+margin-top:20px;
+}
+
 </style>
+
 </head>
 
 <body>
+
 <nav>
-<b>🚀 PriceGuard</b>
+
+<div class="logo">PriceGuard.ai</div>
+
 <div>
 <a href="#home">Home</a>
 <a href="#productos">Productos</a>
 <a href="#dashboard">Dashboard</a>
+<a href="#pricing">Pricing</a>
 </div>
+
 </nav>
 
-<section id="home">
-<div class="hero">
-<h1>Controla los precios de tu competencia</h1>
-<p>📦 Diseñado para vendedores online y ecommerce</p>
-<p>🎁 Prueba gratuita de 7 días<br>Sin tarjeta de crédito</p>
-<h3>Qué puedes hacer con PriceGuard</h3>
-<ul>
-<li>📊 Comparar tus precios con competidores</li>
-<li>⚠️ Detectar cuando tu precio es demasiado alto</li>
-<li>📈 Mejorar tu competitividad</li>
-<li>🚀 Tomar decisiones de precio basadas en datos</li>
-</ul>
+<section id="home" class="hero">
+
+<div class="hero-text">
+
+<h1>Catch pricing errors before they cost you revenue</h1>
+
+<p>
+Monitor your ecommerce pricing and compare with competitors automatically.
+</p>
+
+<div class="cta">
+<button class="btn btn-primary">Sign up</button>
+<button class="btn btn-outline">Watch demo</button>
 </div>
 
-<div class="card">
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Contraseña">
-<button onclick="register()">Registrarse</button>
-<button onclick="login()">Login</button>
-<button onclick="logout()">Logout</button>
-<p id="emailStatus">No conectado</p>
-<p>🚀 Plan PRO próximamente</p>
 </div>
 
-<div id="trialWarning" class="warning" style="display:none">
-<h3>Tu prueba gratuita terminó</h3>
-<p>PriceGuard PRO se lanzará pronto.</p>
-<input id="proEmail" placeholder="Tu email">
-<button onclick="proInterest()">Avisadme cuando salga PRO</button>
-<p>🔥 <span id="proCount">0</span> personas quieren PRO</p>
+<img class="hero-img" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71">
+
+</section>
+
+<section>
+
+<h2 style="text-align:center;font-size:36px">
+Market leaders in pricing error detection
+</h2>
+
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:60px">
+
+<div>
+<h3>24/7 Monitoring</h3>
+<p>Detect pricing errors instantly.</p>
 </div>
+
+<div>
+<h3>Competitor Tracking</h3>
+<p>Compare your price with competitors.</p>
+</div>
+
+<div>
+<h3>Revenue Protection</h3>
+<p>Prevent costly pricing mistakes.</p>
+</div>
+
+</div>
+
 </section>
 
 <section id="productos">
+
 <h2>Productos</h2>
+
 <div class="card">
+
 <input id="productName" placeholder="Producto">
+
 <input id="myPrice" type="number" placeholder="Tu precio">
+
 <input id="competitorPrice" type="number" placeholder="Precio competidor">
-<button onclick="addProduct()">Guardar</button>
+
+<button class="btn btn-primary" onclick="addProduct()">Guardar</button>
+
 </div>
+
 <div class="card">
-<input type="file" id="csvFile">
-<button onclick="importCSV()">Importar CSV</button>
-</div>
-<div class="card">
+
 <table>
+
 <thead>
+
 <tr>
 <th>Producto</th>
 <th>Tu precio</th>
@@ -91,222 +281,140 @@ td,th{padding:12px;border-bottom:1px solid #333}
 <th>Recomendación</th>
 <th></th>
 </tr>
+
 </thead>
+
 <tbody id="productsTable"></tbody>
+
 </table>
+
 </div>
+
 </section>
 
 <section id="dashboard">
+
 <h2>Dashboard</h2>
+
 <div class="kpi">
+
 <div class="box"><h3 id="kpiTotal">0</h3><p>Total productos</p></div>
+
 <div class="box"><h3 id="kpiRisk">0</h3><p>Fuera de mercado</p></div>
+
 <div class="box"><h3 id="kpiAvg">0€</h3><p>Precio medio</p></div>
+
 <div class="box"><h3 id="kpiPercent">0%</h3><p>Competitividad</p></div>
+
 </div>
+
 <canvas id="chart"></canvas>
+
+</section>
+
+<section id="pricing">
+
+<h2 style="text-align:center;font-size:40px">
+Pricing that pays for itself
+</h2>
+
+<div class="price-grid">
+
+<div class="price-card">
+
+<h3>Starter</h3>
+
+<h1>€135</h1>
+
+<p>/month</p>
+
+<ul>
+<li>200 SKUs monitored</li>
+<li>Email alerts</li>
+<li>30 day history</li>
+</ul>
+
+<button class="btn btn-primary">Sign up</button>
+
+</div>
+
+<div class="price-card popular">
+
+<h3>Pro</h3>
+
+<h1>€259</h1>
+
+<p>/month</p>
+
+<ul>
+<li>10,000 SKUs</li>
+<li>Advanced rules</li>
+<li>Multi-store dashboard</li>
+<li>Priority support</li>
+</ul>
+
+<button class="btn btn-primary">Sign up</button>
+
+</div>
+
+<div class="price-card">
+
+<h3>Enterprise</h3>
+
+<h1>Custom</h1>
+
+<ul>
+<li>Unlimited SKUs</li>
+<li>Custom integrations</li>
+<li>Dedicated manager</li>
+</ul>
+
+<button class="btn btn-outline">Contact</button>
+
+</div>
+
+</div>
+
 </section>
 
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
-import { getFirestore, collection, addDoc, query, where, onSnapshot, doc, deleteDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
+import { getFirestore, collection, addDoc, query, where, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA87Bizkb3v2byj6f1Y7qBUGo6nrexYu9Y",
-  authDomain: "priceguard-13093.firebaseapp.com",
-  projectId: "priceguard-13093",
-  storageBucket: "priceguard-13093.firebasestorage.app",
-  messagingSenderId: "873882635164",
-  appId: "1:873882635164:web:f64a40e42c6d9ce60d9659",
-  measurementId: "G-0DCEX9F93Z"
-};
+
+apiKey: "AIzaSyA87Bizkb3v2byj6f1Y7qBUGo6nrexYu9Y",
+authDomain: "priceguard-13093.firebaseapp.com",
+projectId: "priceguard-13093",
+
+}
 
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const db = getFirestore(app)
-let user=null, products=[], chart=null
 
-function validateEmail(email){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) }
-
-// Registro/Login
-window.register = async ()=>{
-  const email=document.getElementById("email").value.trim()
-  const pass=document.getElementById("password").value
-  if(!email||!pass){alert("Rellena email y contraseña");return}
-  if(!validateEmail(email)){alert("Email inválido");return}
-  if(pass.length<6){alert("Mínimo 6 caracteres");return}
-  try{
-    const cred=await createUserWithEmailAndPassword(auth,email,pass)
-    await setDoc(doc(db,"users",cred.user.uid),{trial:true,trialEnd:Date.now()+7*24*60*60*1000,pro:false})
-    alert("Cuenta creada. 7 días gratis 🚀")
-  }catch(err){alert("Error: "+err.message)}
-}
-
-window.login = async ()=>{
-  const email=document.getElementById("email").value.trim()
-  const pass=document.getElementById("password").value
-  if(!email||!pass){alert("Rellena email y contraseña");return}
-  if(!validateEmail(email)){alert("Email inválido");return}
-  if(pass.length<6){alert("Mínimo 6 caracteres");return}
-  try{ await signInWithEmailAndPassword(auth,email,pass) }
-  catch(err){ alert("Error: "+err.message) }
-}
-
-window.logout = ()=>signOut(auth)
-
-onAuthStateChanged(auth, async(u)=>{
-  user=u
-  if(!u){document.getElementById("emailStatus").innerText="No conectado"; return}
-  document.getElementById("emailStatus").innerText=u.email
-  loadProducts()
-  loadInterest()
-})
-
-async function checkTrial(){
-  const snap = await getDoc(doc(db,"users",user.uid))
-  const data = snap.data()
-  if(!data) return true
-  if(Date.now()>data.trialEnd && !data.pro){document.getElementById("trialWarning").style.display="block"; return false}
-  return true
-}
-
-// Productos
-function loadProducts(){
-  if(!user){ drawChart(); return } // dibuja con datos de prueba si no hay usuario
-  const q=query(collection(db,"products"),where("uid","==",user.uid))
-  onSnapshot(q, snap=>{
-    products=[]
-    snap.forEach(d=>products.push({id:d.id,...d.data()}))
-    renderProducts()
-    updateDashboard()
-    drawChart()
-  })
-}
+let user=null
+let products=[]
 
 window.addProduct=async()=>{
-  if(!user) return
-  if(!await checkTrial()){alert("Tu prueba terminó"); return}
-  const name=document.getElementById("productName").value
-  const myPrice=parseFloat(document.getElementById("myPrice").value)
-  const comp=parseFloat(document.getElementById("competitorPrice").value)
-  if(!name||isNaN(myPrice)||isNaN(comp)){alert("Rellena todos los campos"); return}
-  await addDoc(collection(db,"products"),{uid:user.uid,name,myPrice,comp,date:Date.now()})
+
+const name=document.getElementById("productName").value
+const myPrice=parseFloat(document.getElementById("myPrice").value)
+const comp=parseFloat(document.getElementById("competitorPrice").value)
+
+if(!name||!myPrice||!comp)return
+
+await addDoc(collection(db,"products"),{
+name,
+myPrice,
+comp
+})
+
 }
 
-function renderProducts(){
-  const table=document.getElementById("productsTable")
-  table.innerHTML=""
-  products.forEach(p=>{
-    let rec="OK"
-    if(p.myPrice>p.comp) rec="Bajar precio"
-    if(p.myPrice<p.comp) rec="Subir precio"
-    table.innerHTML+=`<tr><td>${p.name}</td><td>${p.myPrice}€</td><td>${p.comp}€</td><td>${rec}</td><td><button onclick="deleteProduct('${p.id}')">X</button></td></tr>`
-  })
-}
-
-window.deleteProduct=async(id)=>{ await deleteDoc(doc(db,"products",id)) }
-
-// Dashboard
-function updateDashboard(){
-  document.getElementById("kpiTotal").innerText=products.length
-  let risk=0, avg=0, competitive=0
-  products.forEach(p=>{avg+=p.myPrice; if(p.myPrice>p.comp) risk++; if(p.myPrice<=p.comp) competitive++})
-  if(products.length) avg/=products.length
-  document.getElementById("kpiRisk").innerText=risk
-  document.getElementById("kpiAvg").innerText=avg.toFixed(2)+"€"
-  document.getElementById("kpiPercent").innerText=((competitive/products.length)*100||0).toFixed(0)+"%"
-}
-
-// Gráfica profesional con datos de prueba
-function drawChart(){
-  const ctx=document.getElementById("chart").getContext('2d')
-  // Si no hay productos, usar datos de ejemplo
-  const dataProducts = products.length ? products : [
-    {name:'Producto A', myPrice:50, comp:60},
-    {name:'Producto B', myPrice:30, comp:25},
-    {name:'Producto C', myPrice:70, comp:65}
-  ]
-  const labels=dataProducts.map(p=>p.name)
-  const my=dataProducts.map(p=>p.myPrice)
-  const comp=dataProducts.map(p=>p.comp)
-
-  if(chart) chart.destroy()
-
-  const gradientGreen = ctx.createLinearGradient(0,0,0,400)
-  gradientGreen.addColorStop(0,'rgba(34,197,94,0.8)')
-  gradientGreen.addColorStop(1,'rgba(34,197,94,0.3)')
-
-  const gradientRed = ctx.createLinearGradient(0,0,0,400)
-  gradientRed.addColorStop(0,'rgba(239,68,68,0.8)')
-  gradientRed.addColorStop(1,'rgba(239,68,68,0.3)')
-
-  chart=new Chart(ctx,{
-    type:'bar',
-    data:{labels,datasets:[
-      {label:'Tu precio', data:my, backgroundColor:gradientGreen, borderColor:'rgba(34,197,94,1)', borderWidth:1},
-      {label:'Competidor', data:comp, backgroundColor:gradientRed, borderColor:'rgba(239,68,68,1)', borderWidth:1}
-    ]},
-    options:{
-      responsive:true,
-      animation:{duration:1000,easing:'easeOutBounce'},
-      plugins:{
-        legend:{position:'top',labels:{color:'white',font:{size:14}}},
-        title:{display:true,text:'Comparativa de precios',color:'white',font:{size:18}},
-        tooltip:{
-          backgroundColor:'rgba(0,0,0,0.8)',
-          titleColor:'white',
-          bodyColor:'white',
-          callbacks:{
-            label:function(context){
-              const val=context.raw
-              const idx=context.dataIndex
-              const diff=my[idx]-comp[idx]
-              const sign = diff>0? '↑':'↓'
-              return `${context.dataset.label}: ${val}€ (${sign}${Math.abs(diff)}€ respecto competidor)`
-            }
-          }
-        }
-      },
-      scales:{
-        x:{ticks:{color:'white'},grid:{color:'rgba(255,255,255,0.1)'}},
-        y:{ticks:{color:'white'},grid:{color:'rgba(255,255,255,0.1)'}}
-      }
-    }
-  })
-}
-
-// CSV
-window.importCSV=()=>{
-  const file=document.getElementById("csvFile").files[0]
-  const reader=new FileReader()
-  reader.onload=e=>{
-    const lines=e.target.result.split("\n")
-    lines.forEach(async line=>{
-      const [name,myPrice,comp]=line.split(",")
-      if(name) await addDoc(collection(db,"products"),{uid:user.uid,name,myPrice:parseFloat(myPrice),comp:parseFloat(comp)})
-    })
-  }
-  reader.readAsText(file)
-}
-
-// PRO Interest
-window.proInterest=async()=>{
-  const email=document.getElementById("proEmail").value.trim()
-  if(!email){alert("Introduce un email"); return}
-  if(!validateEmail(email)){alert("Email inválido"); return}
-  await addDoc(collection(db,"pro_interest"),{email:email,date:Date.now()})
-  alert("Gracias 🙌 Te avisaremos cuando lancemos PRO")
-}
-
-function loadInterest(){
-  const q=query(collection(db,"pro_interest"))
-  onSnapshot(q,snap=>{document.getElementById("proCount").innerText=snap.size})
-}
-
-// Dibujar la gráfica al cargar la web aunque no haya usuario
-drawChart()
 </script>
+
 </body>
 </html>
